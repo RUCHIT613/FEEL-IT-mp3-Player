@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
 
         ImageView splashImage = findViewById(R.id.splash);
