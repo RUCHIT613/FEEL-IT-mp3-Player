@@ -29,13 +29,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
-
         ImageView splashImage = findViewById(R.id.splash);
         AnimatedVectorDrawable splashAnimation = (AnimatedVectorDrawable) splashImage.getDrawable();
         splashAnimation.start();
-
         handler.postDelayed(runnable,3500);
-
 
 
     }
