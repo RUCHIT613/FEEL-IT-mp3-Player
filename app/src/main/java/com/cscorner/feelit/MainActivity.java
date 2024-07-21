@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         AnimatedVectorDrawable splashAnimation = (AnimatedVectorDrawable) splashImage.getDrawable();
         splashAnimation.start();
 
+
         handler.postDelayed(runnable,3500);
 
 
