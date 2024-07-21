@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="black1">#010101</color>
+    <color name="black2">#121212</color>
+    <color name="cyan">#79C9C8</color>
+    <color name="gray">#4e4e4e</color>
+    <color name="gray2">#a0a0a0</color>
+    <color name="tint">#d59686</color>
+    <color name="purple">#ff6750a4</color>
+    <color name="bak">#F2F2F2</color>
+    <color name="orange">#DA6624</color>
+    <color name="green">#60CB6B</color>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Other style attributes -->
+        <item name="android:navigationBarColor">@color/black</item>
+
+        <!-- Hide the status bar -->
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="CustomNumberPickerStyle" parent="Theme.AppCompat.Light">
+        <!-- Customize the color here -->
+        <item name="android:colorAccent">#FFFFFF</item> <!-- Change the text color -->
+        <item name="android:colorControlNormal">@color/gray
+        </item> <!-- Change the selection indicator color -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textSize">30dp</item>
+    </style>
+
+    <color name="light_blue_50">#FFE1F5FE</color>
+    <color name="light_blue_200">#FF81D4FA</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+
+</resources>

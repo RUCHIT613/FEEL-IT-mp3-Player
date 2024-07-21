@@ -1,0 +1,116 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.FEELIT.AppWidget.Container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:id="@+id/widget_relative"
+    android:background="@drawable/custom_cardview"
+    android:theme="@style/AppTheme.AppWidgetContainer">
+
+<!--    <TextView-->
+<!--        android:id="@+id/appwidget_text"-->
+<!--        style="@style/Widget.FEELIT.AppWidget.InnerView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:contentDescription="@string/appwidget_text"-->
+<!--        android:text="@string/appwidget_text"-->
+<!--        android:textSize="24sp"-->
+<!--        android:textStyle="bold|italic" />-->
+    <ImageView
+        android:id="@+id/MINIPLAYER_WIDGET_IMAGEVIEW"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/MINIPLAYER_WIDGET_SONG_NAME_TEXTVIEW"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/MINIPLAYER_WIDGET_IMAGEVIEW"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="11dp"
+        android:layout_toEndOf="@+id/MINIPLAYER_WIDGET_IMAGEVIEW"
+        android:text="JUST FEEL IT!!!"
+        android:textColor="@color/white"
+        android:textSize="16dp" />
+
+    <TextView
+        android:id="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/MINIPLAYER_WIDGET_SONG_NAME_TEXTVIEW"
+        android:layout_alignBottom="@+id/MINIPLAYER_WIDGET_IMAGEVIEW"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="21dp"
+        android:layout_toEndOf="@+id/MINIPLAYER_WIDGET_IMAGEVIEW"
+        android:text=""
+        android:textColor="@color/gray2" />
+
+    <ImageView
+
+        android:id="@+id/MINIPLAYER_WIDGET_NEXT_IMAGEVIEW"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/MINIPLAYER_WIDGET_OPTION2"
+        android:background="@drawable/ripple_effect_for_songs"
+        android:clickable="true"
+        android:src="@drawable/skip_to_next" />
+
+    <ImageView
+        android:id="@+id/MINIPLAYER_WIDGET_PLAY_IMAGEVIEW"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/MINIPLAYER_WIDGET_NEXT_IMAGEVIEW"
+        android:background="@drawable/ripple_effect_for_songs"
+        android:clickable="true"
+        android:src="@drawable/play_icon" />
+
+    <ImageView
+        android:id="@+id/MINIPLAYER_WIDGET_PREVIOUS_IMAGEVIEW"
+
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_toStartOf="@+id/MINIPLAYER_WIDGET_PLAY_IMAGEVIEW"
+        android:background="@drawable/ripple_effect_for_songs"
+        android:clickable="true"
+        android:src="@drawable/skip_to_previous" />
+
+    <ImageView
+        android:id="@+id/MINIPLAYER_WIDGET_OPTION1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:clickable="true"
+        android:layout_toStartOf="@+id/MINIPLAYER_WIDGET_PREVIOUS_IMAGEVIEW"
+        android:src="@drawable/favorite_off"
+        android:background="@drawable/ripple_effect_for_songs"/>
+
+    <ImageView
+        android:id="@+id/MINIPLAYER_WIDGET_OPTION2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_alignEnd="@+id/MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="7dp"
+        android:background="@drawable/ripple_effect_for_songs"
+        android:clickable="true"
+        android:src="@drawable/shuffle_off" />
+
+
+</RelativeLayout>
