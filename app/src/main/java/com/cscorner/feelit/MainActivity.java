@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
         ImageView splashImage = findViewById(R.id.splash);
         AnimatedVectorDrawable splashAnimation = (AnimatedVectorDrawable) splashImage.getDrawable();
         splashAnimation.start();
-
-
         handler.postDelayed(runnable,3500);
 
 
