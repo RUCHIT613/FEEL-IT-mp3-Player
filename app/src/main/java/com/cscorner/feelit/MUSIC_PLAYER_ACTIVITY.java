@@ -1410,6 +1410,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 
 
+
         }else{
             make_a_toast("PLAYLIST IS EMPTY",true);
         }
