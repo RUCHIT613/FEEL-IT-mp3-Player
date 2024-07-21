@@ -28,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         @SuppressLint({"MissingInflatedId", "LocalSuppress"})
+
         ImageView splashImage = findViewById(R.id.splash);
+        Toast.makeText(this, "Update", Toast.LENGTH_SHORT).show();
         AnimatedVectorDrawable splashAnimation = (AnimatedVectorDrawable) splashImage.getDrawable();
         splashAnimation.start();
         handler.postDelayed(runnable,3500);
