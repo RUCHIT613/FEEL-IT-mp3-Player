@@ -1,18 +1,13 @@
 package com.cscorner.feelit;
 
 import static com.cscorner.feelit.App.CHANNEL_1_ID;
-import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.is_media_player_paused;
-import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.mediaSession;
-import static com.cscorner.feelit.MainActivity.Permission_For_External_Storage;
 
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -22,16 +17,11 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.net.Uri;
-import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,21 +38,8 @@ public  class Feel_it_Service extends Service {
         @SuppressLint("ForegroundServiceType")
         @Override
         public int onStartCommand(Intent intent, int flags, int startId) {
-            mediaSession = new MediaSessionCompat(this, "f");
-            mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                    MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-            mediaSession.setMediaButtonReceiver(null);
-
-            PlaybackStateCompat.Builder playback = new PlaybackStateCompat.Builder()
-                    .setActions(PlaybackStateCompat.ACTION_PLAY |
-                            PlaybackStateCompat.ACTION_PAUSE|
-                            PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
-                            PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                    );
-            mediaSession.setPlaybackState(playback.build());
-            mediaSession.setActive(true);
             MUSIC_PLAYER_ACTIVITY musicPlayerActivity=new MUSIC_PLAYER_ACTIVITY();
-            Bitmap bitmap;
+
             String song_name=intent.getStringExtra("SONG_NAME");
             String artist_name=intent.getStringExtra("ARTIST_NAME");
             long album_art=intent.getLongExtra("ALBUM_ART",0);
@@ -74,41 +51,10 @@ public  class Feel_it_Service extends Service {
             try {
                 InputStream inputStream = getContentResolver().openInputStream(albumArtUri);
 
-                bitmap = BitmapFactory.decodeStream(inputStream);
-
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                 Bitmap bitmap1=getRoundedCornerBitmap(bitmap,25);
                 expanded.setImageViewBitmap(R.id.custom_notification_album_art_imageview,bitmap1);
                 inputStream.close();
-
-                int iconResId = is_media_player_paused ? R.drawable.play_icon : R.drawable.pause;
-                notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID);
-
-                notification_builder.setSmallIcon(R.drawable.logo)  //THIS IS MEDIA-STYLE NOTIFICATION WITH MEDIA SESSION
-                        .setContentTitle(song_name)
-                        .setContentText(artist_name)
-                        .setLargeIcon(bitmap)
-                        .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                                        .setMediaSession(mediaSession.getSessionToken())
-//                                .setShowActionsInCompactView(0, 1)
-                        )
-                        .setOnlyAlertOnce(true)
-                        .addAction(R.drawable.skip_to_previous, null, get_pending_intent_for_music_player("PREVIOUS_SONG"))
-                        .addAction(iconResId, null, get_pending_intent_for_music_player("PLAY_PAUSE"))
-
-                        .addAction(R.drawable.skip_to_next, null, get_pending_intent_for_music_player("NEXT_SONG"))
-                        .addAction(R.drawable.baseline_close_24, null, get_pending_intent_for_music_player("CLOSE"))
-
-                        .setPriority(NotificationCompat.VISIBILITY_PUBLIC)
-                ;
-
-
-                Notification notification =notification_builder.build();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-                } else {
-                    startForeground(1,notification);
-                }
-
 
 
 
@@ -119,19 +65,19 @@ public  class Feel_it_Service extends Service {
 
 
 
-//            expanded.setTextViewText(R.id.custom_notification_Song_textview,song_name);
-//            expanded.setTextViewText(R.id.custom_notification_artist_textview,artist_name);
-////            expanded.setImageViewUri(R.id.custom_notification_album_art_imageview,albumArtUri);
-//            if(media_player.get_media_player().isPlaying()){
-//                expanded.setImageViewResource(R.id.custom_notification_play_pause_imageview,R.drawable.pause);
-//            }else {
-//                expanded.setImageViewResource(R.id.custom_notification_play_pause_imageview,R.drawable.play_icon);
-//            }
-//
-//            expanded.setOnClickPendingIntent(R.id.custom_notification_previous_song_imageview,get_pending_intent_for_music_player("PREVIOUS_SONG"));
-//            expanded.setOnClickPendingIntent(R.id.custom_notification_play_pause_imageview,get_pending_intent_for_music_player("PLAY_PAUSE"));
-//            expanded.setOnClickPendingIntent(R.id.custom_notification_next_song_imageview,get_pending_intent_for_music_player("NEXT_SONG"));
-//            expanded.setOnClickPendingIntent(R.id.custom_notification_close_imageview,get_pending_intent_for_music_player("CLOSE"));
+            expanded.setTextViewText(R.id.custom_notification_Song_textview,song_name);
+            expanded.setTextViewText(R.id.custom_notification_artist_textview,artist_name);
+//            expanded.setImageViewUri(R.id.custom_notification_album_art_imageview,albumArtUri);
+            if(media_player.get_media_player().isPlaying()){
+                expanded.setImageViewResource(R.id.custom_notification_play_pause_imageview,R.drawable.pause);
+            }else {
+                expanded.setImageViewResource(R.id.custom_notification_play_pause_imageview,R.drawable.play_icon);
+            }
+
+            expanded.setOnClickPendingIntent(R.id.custom_notification_previous_song_imageview,get_pending_intent_for_music_player("PREVIOUS_SONG"));
+            expanded.setOnClickPendingIntent(R.id.custom_notification_play_pause_imageview,get_pending_intent_for_music_player("PLAY_PAUSE"));
+            expanded.setOnClickPendingIntent(R.id.custom_notification_next_song_imageview,get_pending_intent_for_music_player("NEXT_SONG"));
+            expanded.setOnClickPendingIntent(R.id.custom_notification_close_imageview,get_pending_intent_for_music_player("CLOSE"));
 
 
 
@@ -139,25 +85,28 @@ public  class Feel_it_Service extends Service {
 
 
 //        Intent notificationIntent=new Intent(this)
-//            if(notification_builder==null) {
-//                notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID)
-////
-////            notification_builder=new Notification.Builder(this,"channel_1")
-//                        .setSmallIcon(R.drawable.logo)
-//                        .setPriority(NotificationCompat.PRIORITY_MAX)
-//                        .setOnlyAlertOnce(true)
-//                        .setContentTitle("Feel It!!")
-//                        .setCustomBigContentView(expanded)
+            if(notification_builder==null) {
+                notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID)
 //
-////                        .setContent(expanded)
-////                        .setCustomHeadsUpContentView(expanded)
-////                        .setContentText(String.format("%s\n%s",song_name,artist_name))
-//                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+//            notification_builder=new Notification.Builder(this,"channel_1")
+                        .setSmallIcon(R.drawable.logo)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
+                        .setOnlyAlertOnce(true)
+                        .setContentTitle("Feel It!!")
+                        .setCustomBigContentView(expanded)
+
+//                        .setContent(expanded)
+//                        .setCustomHeadsUpContentView(expanded)
+//                        .setContentText(String.format("%s\n%s",song_name,artist_name))
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
 
-//            }
+            }
+
+            Notification notification =notification_builder.build();
+
+            startForeground(1,notification);
             return START_NOT_STICKY;
-
         }
         public PendingIntent get_pending_intent_for_music_player(String ACTION){
             Intent intent=new Intent(getApplicationContext(),Feel_it_notification_broadcast_receiver.class);
