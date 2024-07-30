@@ -82,12 +82,14 @@ public class All_Playlist_Fragment extends Fragment {
                         if (item.getItemId() == R.id.delete_playlist_pop_up_menu_of_all_playlists_interface) {
                             editor.putString("ACTION","DELETE_PLAYLIST");
                             editor.putInt("DELETE_PLAYLIST",Position);
+                            editor.apply();
                             return true;
                         } else if (item.getItemId()==R.id.play_the_playlist_pop_up_menu_of_all_playlist_interface) {
                             editor.putString("ACTION","PLAY_PLAYLIST");
                             editor.putInt("PLAY_PLAYLIST",Position);
+                            editor.apply();
                         }
-                        editor.apply();
+
 
                         return false;
                     }

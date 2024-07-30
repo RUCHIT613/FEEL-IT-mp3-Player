@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.widget.ImageView;
@@ -48,12 +49,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
     public void start(){
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_GRANTED) {
-            Permission_For_External_Storage=true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED){
+                Permission_For_External_Storage=true;
+            }else{
+                Permission_For_External_Storage=false;
+            }
         } else {
-            Permission_For_External_Storage=false;
-//            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            if( ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                Permission_For_External_Storage=true;
+            }else{
+                Permission_For_External_Storage=false;
+            }
+
+
         }
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) ==

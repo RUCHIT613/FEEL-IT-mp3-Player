@@ -4174,27 +4174,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-//        make_a_toast("|sdsd");
-//        make_a_toast(String.format("%d",intent.getIntExtra("keyyyy",0)));
-//        make_a_toast(preferences.getString("ru",""));
-//        ACTIVATE_USER_CREATED_PLAYLIST_FROM_HOME_SCREEN_SHORTCUT();
-//        if(is_activity_minimize){
-//            moveTaskToBack(true);
-//        }
-//
-//        if (intent.getAction() != null && intent.getAction().equals("NEXT_SONG")) {
-//
-//            NEXT_SONG();
-//        }
-//        else if (intent.getAction() != null && intent.getAction().equals("PREVIOUS_SONG")) {
-//
-//            PREVIOUS_SONG();
-//        }
-//        else if (intent.getAction() != null && intent.getAction().equals("PLAY_PAUSE")) {
-//
-//            PLAY_AND_PAUSE();
-//        }
-//        ACTIVATE_MUSIC_PLAYER_INTERFACE();
+
+
     }
 
 
@@ -4542,7 +4523,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             put_action_command_to_null();
 
 
-            handler.postDelayed(runnable_for_notification_action,0);
+            handler.postDelayed(runnable_for_notification_action,1000);
 
         }
 
