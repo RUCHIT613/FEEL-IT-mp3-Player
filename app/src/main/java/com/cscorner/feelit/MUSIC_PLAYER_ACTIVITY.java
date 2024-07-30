@@ -103,6 +103,8 @@ import java.util.Random;
 public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PLAYER_BOTTOM_CLASS.Set_ON_CLICKED_LISTENER {
     public Boolean PERMISSION_TO_DISPLAY_TOAST=false;
 
+    public int TOTAL_SONGS_OF_RECENTLY_ADDED;
+    public static ArrayList<ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT> arrayList_for_fragments;
     private All_Song_Fragment ALL_SONG_FRAGMENT=new All_Song_Fragment();
     private All_Playlist_Fragment ALL_PLAYLIST_FRAGMENT=new All_Playlist_Fragment();
     private All_Album_Fragment ALL_ALBUM_FRAGMENT=new All_Album_Fragment();
@@ -165,6 +167,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     public static final String LOAD_ARRAY_PERMISSION_KEY_FOR_ALL_PLAYLIST = "key_of_load_all_playlist_array";
     public static final String LOAD_ARRAY_PERMISSION_KEY_FOR_USER_CREATED_PLAYLIST = "key_of_load_user_created_playlist_array";
+
+    public static final String TOTAL_SONGS_OF_RECENTLY_ADDED_KEY = "key_of_total_songs_of_recently_added";
 
     public static final String SHORTCUT_PLAYLIST_ACTIVATION="key_of_shortcut_playlist_activation";
     public static final String MINIPLAYER_SONG_NAME_KEY = "key_of_miniplayer_song_name";
@@ -973,11 +977,17 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
         tabLayout.setupWithViewPager(viewPager);
 
-        adapter_for_view_pager=new VIEW_PAGER_ADAPTER(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        adapter_for_view_pager.ADD_FRAGMENT(ALL_SONG_FRAGMENT,"SONGS");
-        adapter_for_view_pager.ADD_FRAGMENT(ALL_PLAYLIST_FRAGMENT,"PLAYLIST");
-        adapter_for_view_pager.ADD_FRAGMENT(ALL_ALBUM_FRAGMENT,"ALBUM");
-        adapter_for_view_pager.ADD_FRAGMENT(ALL_ARTIST_FRAGMENT,"ARTIST");
+        arrayList_for_fragments=new ArrayList<>();
+        arrayList_for_fragments.add(new ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT(ALL_SONG_FRAGMENT,"SONGS"));
+        arrayList_for_fragments.add(new ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT(ALL_PLAYLIST_FRAGMENT,"PLAYLIST"));
+        arrayList_for_fragments.add(new ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT(ALL_ALBUM_FRAGMENT,"ALBUM"));
+        arrayList_for_fragments.add(new ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT(ALL_ARTIST_FRAGMENT,"ARTIST"));
+//        adapter_for_view_pager.ADD_FRAGMENT(ALL_SONG_FRAGMENT,"SONGS");
+//        adapter_for_view_pager.ADD_FRAGMENT(ALL_PLAYLIST_FRAGMENT,"PLAYLIST");
+//        adapter_for_view_pager.ADD_FRAGMENT(ALL_ALBUM_FRAGMENT,"ALBUM");
+//        adapter_for_view_pager.ADD_FRAGMENT(ALL_ARTIST_FRAGMENT,"ARTIST");
+        adapter_for_view_pager=new VIEW_PAGER_ADAPTER(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,arrayList_for_fragments);
+
         viewPager.setAdapter(adapter_for_view_pager);
 
         viewPager.setCurrentItem(1);
@@ -1232,6 +1242,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         IS_ALL_PLAYLIST_INTERFACE_ACTIVE = true;
 
         load_data_into_array_list_for_recently_added();
+        editor.putInt(TOTAL_SONGS_OF_RECENTLY_ADDED_KEY,TOTAL_SONGS_OF_RECENTLY_ADDED);
+        editor.apply();
         SharedPreferences preferences = getSharedPreferences("preff", MODE_PRIVATE);
         boolean should_i_load_array = preferences.getBoolean(LOAD_ARRAY_PERMISSION_KEY_FOR_ALL_PLAYLIST, false);
 //        should_i_load_array=false;
@@ -1505,6 +1517,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     @SuppressLint("Range")
     public void load_data_into_array_list_for_recently_added() {
+        arrayList_for_recently_added_playlist = new ArrayList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {
                 MediaStore.Audio.AudioColumns.TITLE,
@@ -1561,6 +1574,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 
         }
+        TOTAL_SONGS_OF_RECENTLY_ADDED=arrayList_for_recently_added_playlist.size();
+
         arrayList_for_all_song_interface = arrayList_for_recently_added_playlist;
         arrayList_for_all_song_interface = load_all_songs_of_all_songs_interface_in_ascending.load_songs_in_ascending(arrayList_for_recently_added_playlist);
 
@@ -3892,9 +3907,11 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     protected void onResume() {
         super.onResume();
         make_a_toast("resume",false);
+
         if(is_activity_minimize){
             is_activity_minimize=false;
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED){
                 Permission_For_External_Storage=true;
@@ -3914,6 +3931,15 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             startActivity(new Intent(this, Required_Permission_Interface.class));
             finish();
         }
+        if(Permission_For_External_Storage&&Permission_For_Telephone){
+            load_data_into_array_list_for_recently_added();
+            if(preferences.getInt(TOTAL_SONGS_OF_RECENTLY_ADDED_KEY,613)!=TOTAL_SONGS_OF_RECENTLY_ADDED){
+                viewPager.setAdapter(adapter_for_view_pager);
+                viewPager.setCurrentItem(1);
+                editor.putInt(TOTAL_SONGS_OF_RECENTLY_ADDED_KEY,TOTAL_SONGS_OF_RECENTLY_ADDED);
+                editor.apply();
+            }
+        }
 
 
 
@@ -3921,7 +3947,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 //        ACTIVATE_USER_CREATED_PLAYLIST_FROM_HOME_SCREEN_SHORTCUT();
     }
-/*  THIS FUNCTION WHEN USER MINIMIZE THE APP AND IT SAVES PERMISSION SHOULD THE ALL PLAYLIST INTERFACE SHOULD BE SAVED OR NOT*/
+/*  THIS FUNCTION WHEN USER MINIMIZE THE APP AND IT SAVES PERMISSION, SHOULD THE ALL PLAYLIST INTERFACE SHOULD BE SAVED OR NOT*/
     @Override
     protected void onStop() {
         super.onStop();
