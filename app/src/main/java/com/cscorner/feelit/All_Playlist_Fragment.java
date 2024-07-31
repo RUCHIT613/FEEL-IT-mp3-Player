@@ -1,6 +1,7 @@
 package com.cscorner.feelit;
 
 
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME;
 import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.arrayList_for_all_playlists;
 
 import android.annotation.SuppressLint;
@@ -80,9 +81,10 @@ public class All_Playlist_Fragment extends Fragment {
                         SharedPreferences preferences = getContext().getSharedPreferences("preff",Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor= preferences.edit();
                         if (item.getItemId() == R.id.delete_playlist_pop_up_menu_of_all_playlists_interface) {
-                            editor.putString("ACTION","DELETE_PLAYLIST");
-                            editor.putInt("DELETE_PLAYLIST",Position);
-                            editor.apply();
+//                            editor.putString("ACTION","DELETE_PLAYLIST");
+//                            editor.putInt("DELETE_PLAYLIST",Position);
+//                            editor.apply();
+                            DELETE_PLAYLIST(Position);
                             return true;
                         } else if (item.getItemId()==R.id.play_the_playlist_pop_up_menu_of_all_playlist_interface) {
                             editor.putString("ACTION","PLAY_PLAYLIST");
@@ -107,6 +109,31 @@ public class All_Playlist_Fragment extends Fragment {
     }
     public void NOTIFY_PLAYLIST_REMOVED(int position){
         Adapter_For_All_Playlist.notifyItemRemoved(position);
+    }
+    public void DELETE_PLAYLIST(int position){
+        SharedPreferences preferences=getContext().getSharedPreferences("preff",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor= preferences.edit();
+        String not_deletable_playlist = arrayList_for_all_playlists.get(position).getMPlaylist_name();
+        if (!(not_deletable_playlist.equals("Recently Added")|| not_deletable_playlist.equals("Favourite"))) {
+
+            boolean permission_to_check_the_playlist_is_not_empty=preferences.getBoolean(not_deletable_playlist,false);
+            if(permission_to_check_the_playlist_is_not_empty &&
+                    preferences.getBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+not_deletable_playlist,false)){
+
+                editor.putBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+not_deletable_playlist,true);
+
+            }else{
+                editor.putBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+not_deletable_playlist,false);
+            }
+
+            arrayList_for_all_playlists.remove(position);
+            Adapter_For_All_Playlist.notifyItemRemoved(position);
+
+            save_and_load_array.save_array_for_all_playlist(getContext(),arrayList_for_all_playlists);
+        } else {
+//            make_a_toast("You Can't Delete This Playlist",true);
+        }
+        editor.apply();
     }
 
 }

@@ -87,8 +87,8 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
         void BOTTOM_CLASS_SENDS_POSITION_FROM_RECYCLER_VIEW(int POSITION);
         void BOTTOM_CLASS_ADD_SONG_TO_MULTIPLE_PLAYLIST_BUTTON_FUNCTION();
         void BOTTOM_CLASS_GO_TO_ARTIST_OR_ALBUM(long ALBUM_ART, String ARTIST_NAME_OR_ALBUM_NAME, boolean PERMISSION_FOR_ALBUM) throws IOException;
-        void BOTTOM_CLASS_ACTIVATE_SLEEP_TIMER_BOTTOM_FRAGMENT();
 
+        void BOTTOM_CLASS_ACTIVATE_SLEEP_TIMER_BOTTOM_FRAGMENT();
         void BOTTOM_CLASS_SLEEP_TIMER(int TIME);
 
 
@@ -117,7 +117,8 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
         ARTIST_NAME=preferences.getString(MINIPLAYER_ARTIST_NAME_KEY,"");
         ALBUM_NAME=preferences.getString(MINIPLAYER_ALBUM_NAME_KEY,"");
         ALBUM_ART=preferences.getLong(MINIPLAYER_ALBUM_ART_KEY,613);
-        if(mPERMISSION_FOR_ADD_TO_PLAYLIST_AND_SONG_INFO){
+
+        if(mPERMISSION_FOR_ADD_TO_PLAYLIST_AND_SONG_INFO){ //FOR MULTIPLE PLAYLIST BOTTOM FRAGMENT
             go_to_artist_textview=view.findViewById(R.id.go_to_artist);
             go_to_album_textview=view.findViewById(R.id.go_to_album);
             sleep_timer_textview=view.findViewById(R.id.sleep_timer_TEXTVIEW);
@@ -142,6 +143,8 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
                     mlistener.BOTTOM_CLASS_SENDS_POSITION_FROM_RECYCLER_VIEW(Position);
                 }
             });
+
+
             add_song_to_multiple_playlist_add_button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -185,7 +188,7 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
                         e.printStackTrace();
                     }
 
-// Get the Uri of the temporary file
+                // Get the Uri of the temporary file
                     Uri uri = Uri.fromFile(tempFile);
                     //THIS LINE MAY CAUSE ERROR DUE TO ALBUM ART BEING 613;
                     Picasso.get().load(uri).into(song_info_image_view);
@@ -252,7 +255,7 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
             activate_views(mpermission_for_add_song_to_playlist);
 
         }
-        else{
+        else{               //FOR SONG INFO BOTTOM FRAGMENT
 //            sleep_timer_linear_layout =view.findViewById(R.id.timer_layout);
             five_sleep_timer_textview=view.findViewById(R.id.sleep_timer_five_mins_TEXTVIEW);
             ten_sleep_timer_textview=view.findViewById(R.id.sleep_timer_ten_mins_TEXTVIEW);

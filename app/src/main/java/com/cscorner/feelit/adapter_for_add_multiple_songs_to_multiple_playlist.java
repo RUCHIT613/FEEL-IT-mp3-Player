@@ -69,7 +69,7 @@ public class adapter_for_add_multiple_songs_to_multiple_playlist extends Recycle
     public void onBindViewHolder(@NonNull view_holder_for_add_multiple_songs_to_multiple_playlist holder, int position) {
         Recently_added_recyclerview_elements_item_class current_item=marrayList.get(position);
 
-    if(current_item.getMsong_name().length()>36){
+        if(current_item.getMsong_name().length()>36){
             holder.song_name_text_view_of_add_multiple_songs_to_multiple_songs.setText(current_item.getMsong_name().substring(0,36)+"...");
 
         }
@@ -97,7 +97,6 @@ public class adapter_for_add_multiple_songs_to_multiple_playlist extends Recycle
 
         Picasso.get().load(albumArtUri).into(holder.album_art_image_view_of_add_multiple_songs_to_multiple_songs);
 
-//        holder.more_button_of_add_multiple_songs_to_multiple_songs.setSelected(current_item.isMis_selected());
 
 
         if(current_item.isMis_selected()){
@@ -130,6 +129,7 @@ public class adapter_for_add_multiple_songs_to_multiple_playlist extends Recycle
             current_item.setMis_selected(!current_item.isMis_selected());
             holder.more_button_of_add_multiple_songs_to_multiple_songs.setImageResource(R.drawable.radio_button_on);
             holder.more_button_of_add_multiple_songs_to_multiple_songs.setSelected(current_item.isMis_selected());
+
             if(current_item.isMis_selected()){
                 holder.more_button_of_add_multiple_songs_to_multiple_songs.setImageResource(R.drawable.radio_button_on);
                 selected_songs_in_sequence.add(position);
