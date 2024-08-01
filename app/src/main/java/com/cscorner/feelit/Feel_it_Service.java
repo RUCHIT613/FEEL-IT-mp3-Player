@@ -8,6 +8,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -105,7 +106,7 @@ public  class Feel_it_Service extends Service {
 
             Notification notification =notification_builder.build();
 
-            startForeground(1,notification);
+            startForeground(1,notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
             return START_NOT_STICKY;
         }
         public PendingIntent get_pending_intent_for_music_player(String ACTION){

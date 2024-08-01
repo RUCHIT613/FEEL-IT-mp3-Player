@@ -10,6 +10,7 @@ public class media_player {
 
             player=new MediaPlayer();
 
+
         }
         return player;
     }

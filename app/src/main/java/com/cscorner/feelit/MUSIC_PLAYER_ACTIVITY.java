@@ -861,15 +861,19 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             @Override
             public void onPlay() {
                 PLAY_AND_PAUSE();
+                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
             }
 
             @Override
             public void onPause() {
                 PLAY_AND_PAUSE();
+                updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
             }
 
             @Override
             public void onSkipToNext() {
+                updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT);
+
                 DeviceConnectionChecker connectionChecker =new DeviceConnectionChecker(getApplicationContext());
 
                 SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
@@ -904,6 +908,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
             @Override
             public void onSkipToPrevious() {
+                updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS);
                 DeviceConnectionChecker connectionChecker =new DeviceConnectionChecker(getApplicationContext());
                 SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
                 if (connectionChecker.areEarphonesConnected()) {
@@ -4270,23 +4275,23 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             expanded.setOnClickPendingIntent(R.id.custom_notification_close_imageview, get_pending_intent_for_music_player("CLOSE"));
 
 //            if (notification_builder == null) {
-//                notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID);
+//                notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID)
 //                        .setSmallIcon(R.drawable.logo)                         //this part is for custom notification
 //                        .setPriority(NotificationCompat.PRIORITY_MAX)
 //                        .setOnlyAlertOnce(true)
 ////                        .setLargeIcon(bitmap1)
 //
 //                        .setContentTitle("Feel It!!")
-
+//
 ////                        .addAction(R.drawable.pause_button_music_player,null,get_pending_intent_for_music_player("PLAY_PAUSE"))
 ////                        .addAction(R.drawable.previous_song_button_music_player,null,get_pending_intent_for_music_player("PREVIOUS"))
 ////                        .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
 ////                                .setMediaSession(mediaSession.getSessionToken()))
-
+//
 //                        .setCustomBigContentView(expanded)
 //                        .setContentText(String.format("NOW PLAYING : %s",Song_Name))
-//                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            //            }else {
+//                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+//                        }else {
 //
 //                              notification_builder.setContentText(String.format("NOW PLAYING : %s",Song_Name));
 //                              notification_builder.setCustomBigContentView(expanded);
@@ -4357,10 +4362,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //            music_player_album_art_image_view.setImageBitmap(albumArtBitmap);
 //            miniplayer_album_art_imageview.setImageBitmap(albumArtBitmap);
 
-            // Now you have the album art bitmap, you can display it or process it further
         } else {
             // No album art available
-//            Picasso.get().load(R.drawable.logo).into(holder.imageView_for_song_album_art);
         }
 
         try {
@@ -6288,6 +6291,24 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 }
             }
 //        }
+    }
+    private void updatePlaybackState(int state) {
+        long position = media_player.get_media_player().getCurrentPosition();
+        long duration = media_player.get_media_player().getDuration();
+//        long bufferedPosition = (media_player.get_media_player().getBufferPercentage() * duration) / 100;
+
+        float playbackSpeed = (state == PlaybackStateCompat.STATE_PLAYING) ? 1.0f : 0f;
+
+        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(PlaybackStateCompat.ACTION_PLAY |
+                        PlaybackStateCompat.ACTION_PAUSE |
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+                       )
+                .setState(state, position, playbackSpeed)
+                .setBufferedPosition(45); // Set the buffered position
+
+        mediaSession.setPlaybackState(stateBuilder.build());
     }
 
     

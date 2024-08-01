@@ -41,10 +41,11 @@ dependencies {
 //    implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation ("androidx.media:media:1.7.0")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
-    implementation("androidx.activity:activity:1.9.0") // Use the latest version available
+    implementation("androidx.activity:activity:1.9.1") // Use the latest version available
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
 //    implementation ("com.android.support:support-v4:28.0.0")
+    implementation ("androidx.media:media:1.7.0")
 
 
     implementation("androidx.appcompat:appcompat:1.7.0")
