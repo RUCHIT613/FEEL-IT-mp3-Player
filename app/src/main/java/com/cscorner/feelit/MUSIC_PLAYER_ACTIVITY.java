@@ -27,6 +27,8 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
@@ -4231,12 +4233,15 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     @SuppressLint("ResourceType")
     public void configure_notification(String Song_Name, String Artist_Name, long Album_Art){
 //        make_a_toast("configure",true);
-        Bitmap bitmap1,albumArtBitmap;
+        Bitmap bitmap1,albumArtBitmap = null;
 //        Uri albumArtUri = Uri.parse("content://media/external/audio/albumart/" + Album_Art);
         RemoteViews expanded=new RemoteViews(getPackageName(),R.layout.custom_notification);
 //        expanded.setInt(R.layout.custom_notification, "setBackgroundColor", getResources().getColor(R.color.black));
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(temp_array_list.get(current_song_index).getMpath());
+        Intent intent = new Intent(this, MUSIC_PLAYER_ACTIVITY.class);
+        int iconResId = is_media_player_paused ? R.drawable.play_icon : R.drawable.pause;
+
 
         byte[] albumArtBytes = retriever.getEmbeddedPicture();
         if (albumArtBytes != null) {
@@ -4261,12 +4266,10 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             } else {
                 expanded.setImageViewResource(R.id.custom_notification_play_pause_imageview, R.drawable.play_icon);
             }
-            Intent intent = new Intent(this, MUSIC_PLAYER_ACTIVITY.class);
 
 
 //            expanded.setOnClickPendingIntent(R.id.test,PendingIntent.getActivity(getApplicationContext(),0,intent,PendingIntent.FLAG_MUTABLE));
             expanded.setOnClickPendingIntent(R.id.notification_linear, PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE));
-            int iconResId = is_media_player_paused ? R.drawable.play_icon : R.drawable.pause;
 
 
             expanded.setOnClickPendingIntent(R.id.custom_notification_previous_song_imageview, get_pending_intent_for_music_player("PREVIOUS_SONG"));
@@ -4297,26 +4300,48 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //                              notification_builder.setCustomBigContentView(expanded);
 //                        }
 
-            notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID);
 
-            notification_builder.setSmallIcon(R.drawable.logo)  //this is for mediaStyle notification
-                    .setContentTitle(Song_Name)
-                    .setContentText(Artist_Name)
-                    .setLargeIcon(albumArtBitmap)
-                    .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
-                                    .setMediaSession(mediaSession.getSessionToken())
+
+// Get the Uri of the temporary file
+//            Uri uri = Uri.fromFile(tempFile);
+//            Picasso.get().load(uri).into(holder.imageView_for_song_album_art);
+
+
+//            Picasso.get().load(uri).into(music_player_album_art_image_view);
+//            Picasso.get().load(uri).into(miniplayer_album_art_imageview);
+//            music_player_album_art_image_view.setImageBitmap(albumArtBitmap);
+//            miniplayer_album_art_imageview.setImageBitmap(albumArtBitmap);
+
+        } else {
+            albumArtBitmap=drawableToBitmap(getResources().getDrawable(R.drawable.logo));
+            // No album art available
+        }
+
+        try {
+            retriever.release();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        notification_builder = new NotificationCompat.Builder(this, CHANNEL_1_ID);
+
+        notification_builder.setSmallIcon(R.drawable.logo)  //this is for mediaStyle notification
+                .setContentTitle(Song_Name)
+                .setContentText(Artist_Name)
+                .setLargeIcon(albumArtBitmap)
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                                .setMediaSession(mediaSession.getSessionToken())
 //                                .setShowActionsInCompactView(0, 1)
-                    )
-                    .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE))
-                    .setOnlyAlertOnce(true)
-                    .addAction(R.drawable.skip_to_previous, null, get_pending_intent_for_music_player("PREVIOUS_SONG"))
-                    .addAction(iconResId, null, get_pending_intent_for_music_player("PLAY_PAUSE"))
+                )
+                .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_MUTABLE))
+                .setOnlyAlertOnce(true)
+                .addAction(R.drawable.skip_to_previous, null, get_pending_intent_for_music_player("PREVIOUS_SONG"))
+                .addAction(iconResId, null, get_pending_intent_for_music_player("PLAY_PAUSE"))
 
-                    .addAction(R.drawable.skip_to_next, null, get_pending_intent_for_music_player("NEXT_SONG"))
-                    .addAction(R.drawable.baseline_close_24, null, get_pending_intent_for_music_player("CLOSE"))
+                .addAction(R.drawable.skip_to_next, null, get_pending_intent_for_music_player("NEXT_SONG"))
+                .addAction(R.drawable.baseline_close_24, null, get_pending_intent_for_music_player("CLOSE"))
 
-                    .setPriority(NotificationCompat.VISIBILITY_PUBLIC)
-            ;
+                .setPriority(NotificationCompat.VISIBILITY_PUBLIC)
+        ;
 
 
 //                notification_builder.setSmallIcon(R.drawable.logo)
@@ -4332,44 +4357,24 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //
 //            }
 
-            Notification notification = notification_builder.build();
+        Notification notification = notification_builder.build();
 
-            notificationManager.notify(1, notification);
-
-
-            File tempFile = null;
-            try {
-                tempFile = createTempFile("album_art", ".jpg");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                FileOutputStream fos = new FileOutputStream(tempFile);
-                albumArtBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                fos.flush();
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-// Get the Uri of the temporary file
-//            Uri uri = Uri.fromFile(tempFile);
-//            Picasso.get().load(uri).into(holder.imageView_for_song_album_art);
+        notificationManager.notify(1, notification);
 
 
-//            Picasso.get().load(uri).into(music_player_album_art_image_view);
-//            Picasso.get().load(uri).into(miniplayer_album_art_imageview);
-//            music_player_album_art_image_view.setImageBitmap(albumArtBitmap);
-//            miniplayer_album_art_imageview.setImageBitmap(albumArtBitmap);
-
-        } else {
-            // No album art available
-        }
-
+        File tempFile = null;
         try {
-            retriever.release();
+            tempFile = createTempFile("album_art", ".jpg");
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(tempFile);
+            albumArtBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
 
@@ -4391,6 +4396,19 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         // Ensure the bitmap uses ARGB_8888 configuration for the best quality
         Bitmap optimizedBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, false);
         return Bitmap.createScaledBitmap(optimizedBitmap, 256, 256, false);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
 
