@@ -38,6 +38,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.content.Intent;
 //import android.support.v4.media.session.MediaSessionCompat;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.telephony.PhoneStateListener;
@@ -57,6 +58,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -4360,7 +4362,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         Notification notification = notification_builder.build();
 
         notificationManager.notify(1, notification);
-
+        
 
         File tempFile = null;
         try {
