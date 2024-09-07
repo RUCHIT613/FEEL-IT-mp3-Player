@@ -1,6 +1,10 @@
 package com.cscorner.feelit;
 
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.MINIPLAYER_ACTIVATE_KEY;
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.PLAY_NEXT_AND_ADD_TO_QUEUE_KEY;
 import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.arrayList_for_all_song_interface;
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.is_add_to_queue_active;
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.temp_array_list;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -52,6 +56,8 @@ public class All_Song_Fragment extends Fragment {
 
             @Override
             public void more_button_ITEM_Clicked(View view, int position) {
+                SharedPreferences preferences = getContext().getSharedPreferences("preff",Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor=preferences.edit();
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), view, Gravity.END);
                 popupMenu.inflate(R.menu.all_songs_interface_popup_menu);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -64,6 +70,23 @@ public class All_Song_Fragment extends Fragment {
                             editor.putInt("ADD_SONG_FROM_ALL_SONG_INTERFACE_MORE",position);
                             editor.apply();
 //
+                            return true;
+                        }else if(item.getItemId()==R.id.add_to_queue&&preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false)){
+
+                            Recently_added_recyclerview_elements_item_class CURRENT=arrayList_for_all_song_interface.get(position);
+                            temp_array_list.add(new Recently_added_recyclerview_elements_item_class(
+                                    CURRENT.getMsong_name(),
+                                    CURRENT.getMpath(),
+                                    CURRENT.getMartist(),
+                                    CURRENT.getMalbum_name(),
+                                    CURRENT.getMduration(),
+                                    CURRENT.getMalbum_art(),
+                                            false)
+                                    );
+                            is_add_to_queue_active=true;
+                            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
+                            editor.apply();
+                            save_and_load_array.save_array_for_user_created_playlist(getContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
                             return true;
                         }
                         return false;

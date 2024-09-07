@@ -4,5 +4,10 @@
 
         android:title="ADD TO PLAYLIST"
         />
+    <item android:id="@+id/add_to_queue"
+
+        android:title="ADD TO QUEUE"
+        />
+
 
 </menu>
