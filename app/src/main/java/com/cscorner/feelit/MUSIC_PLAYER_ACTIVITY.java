@@ -45,6 +45,7 @@ import android.telephony.TelephonyManager;
 import android.transition.ChangeBounds;
 import android.transition.Slide;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 
@@ -104,6 +105,8 @@ import java.util.Random;
 //                                             엄마!!! 니 아들는 이 앱가 만들었어요
 public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PLAYER_BOTTOM_CLASS.Set_ON_CLICKED_LISTENER {
     public Boolean PERMISSION_TO_DISPLAY_TOAST=false;
+     public static boolean is_app_active=false;
+
 
     public int TOTAL_SONGS_OF_RECENTLY_ADDED;
     public static ArrayList<ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT> arrayList_for_fragments;
@@ -207,6 +210,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     public static boolean is_add_to_queue_active=false;
     public static boolean is_play_next_active=false;
+    public static int PLAY_NEXT_INDEX=613;
     private int CURRENT_INTERFACE_POSITION=613;
 
     private ImageView ALL_SONGS_INTERFACE_IMAGEVIEW, ALL_PLAYLIST_INTERFACE_IMAGEVIEW, ALL_ALBUMS_INTERFACE_IMAGEVIEW, ALL_ARTIST_INTERFACE_IMAGEVIEW;
@@ -355,6 +359,12 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     private Call_Listener callListener;
     private TelephonyManager telephonyManager;
 
+    //QUEUE INTERFACE
+    private ConstraintLayout constraintLayout_of_queue_interface;
+    private RecyclerView RecyclerView_of_queue_interface;
+    private recently_added_adapter_class adapter_for_queue_interface;
+    private LinearLayoutManager linearLayoutManager;
+    private boolean IS_QUEUE_INTERFACE_ACTIVE=false;
 
 
     //APP SETTING PANEL
@@ -507,10 +517,11 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         } else {
             setupPhoneStateListener();
         }
-
-        UNPLUGGED_RECIEVER UNPLUGGEDRECIEVER =new UNPLUGGED_RECIEVER();
+        UNPLUGGED_RECEIVER UNPLUGGEDRECIEVER =new UNPLUGGED_RECEIVER();
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(UNPLUGGEDRECIEVER, filter);
+        is_app_active=true;
+
 
 
 
@@ -585,6 +596,11 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         album_art_imageview_for_artist_playlist = findViewById(R.id.artist_playlist_image_view);
         album_name_text_view_for_artist_playlist = findViewById(R.id.playlist_name_of_artist_playlist_TEXTVIEW);
         total_songs_text_view_for_artist_playlist = findViewById(R.id.total_songs_in_artist_playlist_text_view);
+
+        //QUEUE INTERFACE
+        constraintLayout_of_queue_interface=findViewById(R.id.queue_interface);
+
+
 
         //SETTING OPTION ATTRIBUTES
         setting_button=findViewById(R.id.setting_option_button_);
@@ -786,8 +802,10 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 }
 
                 if(preferences.getBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false)){        //THIS CHECKS WHETHER PLAY NEXT OR ADD TO QUEUE FEATURE WAS ACTIVE OR NOT
+                    make_a_toast("QUEUE",true);
                     temp_array_list=save_and_load_array.load_array_for_user_created_playlist(getApplicationContext(),"PLAY_NEXT_AND_ADD_TO_QUEUE");
                     is_add_to_queue_active=true;
+                    is_play_next_active=false;
                 }
                 make_a_toast(String.format("Temp Array Size : %d",temp_array_list.size()),false);
 
@@ -1009,7 +1027,11 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         viewPager.setCurrentItem(1);
 
 
-
+        try {
+            updateWidget(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -1170,21 +1192,22 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
     }
 
-    public class UNPLUGGED_RECIEVER extends BroadcastReceiver {
+    public class UNPLUGGED_RECEIVER extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             SharedPreferences preferences=getSharedPreferences("preff",MODE_PRIVATE);
             if (intent.getAction() != null && intent.getAction().equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
                 // Headphones unplugged
-
                 if(!is_media_player_paused){
+
                     expanded.setImageViewResource(R.id.custom_notification_play_pause_imageview,R.drawable.play_icon);
                     miniplayer_pause_play_image_view.setImageResource(R.drawable.play_icon);
                     music_player_play_and_pause_image_view.setImageResource(R.drawable.play_icon);
                     is_media_player_paused = true;
 
-
-                    media_player.pause_media_player();
+                    if(is_app_active){
+                        media_player.pause_media_player();
+                    }
                     handler.removeCallbacks(runnable2);
                     was_play_timer_activated_before=false;
                     check_user_inactivity();
@@ -1784,6 +1807,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     IS_RECENTLY_ADDED_PLAYLIST_ACTIVE = true;
                     was_play_timer_activated_before=false;
                     is_add_to_queue_active=false;
+                    is_play_next_active=false;
                     editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
                     editor.apply();
 
@@ -1856,7 +1880,14 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
                             Recently_added_recyclerview_elements_item_class Current=arrayList_for_recently_added_playlist.get(position);
                             make_a_toast(String.format("PNSong Name : %s",Current.getMsong_name()),true);
-                            temp_array_list.add(current_song_index+1,new Recently_added_recyclerview_elements_item_class(
+                            if(is_play_next_active){
+                                PLAY_NEXT_INDEX+=1;
+
+                            }else{
+                                PLAY_NEXT_INDEX=current_song_index+1;
+                                is_play_next_active=true;
+                            }
+                            temp_array_list.add(PLAY_NEXT_INDEX,new Recently_added_recyclerview_elements_item_class(
                                     Current.getMsong_name(),
                                     Current.getMpath(),
                                     Current.getMartist(),
@@ -1865,6 +1896,10 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                                     Current.getMalbum_art(),
                                     false
                             ));
+                            save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
+                            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
+                            editor.apply();
+                            load_data_into_array_list_for_recently_added();
                             return true;
                         }
 
@@ -2163,7 +2198,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             Uri albumArtUri = Uri.parse("content://media/external/audio/albumart/" + Album_ID);
 
 
-            arrayList_for_user_created_playlist=temp_array_list;
+
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             retriever.setDataSource(current.getMpath());
 
@@ -2227,6 +2262,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         user_created_total_songs_text_view.setText(String.format("SONGS : %d", arrayList_for_user_created_playlist.size()));
         recyclerView = findViewById(R.id.user_created_recyclerview);
         recyclerView.setHasFixedSize(true);
+//        load_data_into_array_list_for_recently_added();
+//        arrayList_for_user_created_playlist=Update_User_Created_Playlist.get_updated_user_created_array_list(save_and_load_array.load_array_for_user_created_playlist(this,PLAYLIST_NAME),arrayList_for_recently_added_playlist);
         adapter_for_user_created_playlist = new recently_added_adapter_class(arrayList_for_user_created_playlist);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -2349,11 +2386,15 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             SharedPreferences.Editor editor = preferences1.edit();
             editor.putBoolean(PLAYLIST_NAME, true);
             editor.apply();
-            if(!PLAYLIST_NAME.equals("Favourite")){
-                save_and_load_array.save_array_for_user_created_playlist(this, arrayList_for_user_created_playlist, PLAYLIST_NAME);
+            save_and_load_array.save_array_for_user_created_playlist(this, arrayList_for_user_created_playlist, PLAYLIST_NAME);
 
-            }
 
+        }else{
+            make_a_toast("USER ARRAY IS SAVED SUCCESSFULLY",false);
+            SharedPreferences preferences1 = getSharedPreferences("preff", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences1.edit();
+            editor.putBoolean(PLAYLIST_NAME, false);
+            editor.apply();
         }
         scrollView.scrollTo(0,user_created_image_view.getTop());
 
@@ -2467,7 +2508,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             // also for album playlist and artist playlist
             //edit: i made sure that :)
 
-            if(!is_add_to_queue_active){
+            if((!is_add_to_queue_active)&&(!is_play_next_active)){
                 load_data_into_array_list_for_recently_added();
 
                 if (CURRENT_INTERFACE_POSITION == 1) {
@@ -2726,6 +2767,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     }
 
     public void NEXT_SONG() {
+
         was_play_timer_activated_before=false;
         if (Count_for_Shuffle_Button==1 &&(Count_for_Repeat_Button==2 ||( Count_for_Repeat_Button<1||Count_for_Repeat_Button>2) ) ) {
 
@@ -4238,6 +4280,11 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     /* THIS OVERRIDE METHOD CLOSES THE APP AND STOPS THE MUSIC PLAYER AND SERVICE AND MANY MORE IN SIMPLE WORDS IT WRAPUPS EVERYTHING */
     @Override
     protected void onDestroy() {
+        try {
+            updateWidget(this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         media_player.release_media_player();
         Intent ser=new Intent(this, Feel_it_Service.class);
         stopService(ser);
@@ -4246,6 +4293,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         editor.putBoolean(LOAD_ARRAY_PERMISSION_KEY_FOR_ALL_PLAYLIST, true);
         editor.putBoolean("app",false);
         editor.apply();
+
         handler.removeCallbacks(runnable2);
         handler.removeCallbacks(mrunnable);
         handler.removeCallbacks(runnable_for_notification_action);
@@ -6260,6 +6308,12 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         }
     }
 
+    @Override
+    public void ACTIVATE_QUEUE() {
+        ACTIVATE_QUEUE_INTERFACE();
+        music_player.setVisibility(View.GONE);
+    }
+
     public void ACTIVATE_SONG_INFO(View view){
 
         MUSIC_PLAYER_BOTTOM_CLASS musicPlayerBottomClass = new MUSIC_PLAYER_BOTTOM_CLASS(R.layout.add_song_to_multiple_playlist_bottom,true,arrayList_for_add_playlist_without_recently_added,false);
@@ -6441,6 +6495,37 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 .setBufferedPosition(45); // Set the buffered position
 
         mediaSession.setPlaybackState(stateBuilder.build());
+    }
+
+
+
+    public void ACTIVATE_QUEUE_INTERFACE(){
+        constraintLayout_of_queue_interface.setVisibility(View.VISIBLE);
+        recyclerView=findViewById(R.id.recyclerview_of_queue_interface);
+        layoutManager=new LinearLayoutManager(this);
+        adapter_for_queue_interface=new recently_added_adapter_class(temp_array_list);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setAdapter(adapter_for_queue_interface);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter_for_queue_interface.set_ON_CLICKED_LISTENER(new recently_added_adapter_class.OnCLICK_LISTENER() {
+            @Override
+            public void on_ITEM_Clicked(int position) throws Exception {
+                    play(position);
+                    constraintLayout_of_queue_interface.setVisibility(View.GONE);
+                    music_player.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void more_button_ITEM_Clicked(View view, int position) {
+                //REMOVE SONG FROM THE QUEUE
+            }
+
+            @Override
+            public void on_ITEM_LONG_CLICKED(int Long_pressed_song) {
+
+            }
+        });
+
     }
 
     

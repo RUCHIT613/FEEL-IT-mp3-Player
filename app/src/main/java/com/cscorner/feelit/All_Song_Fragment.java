@@ -59,7 +59,7 @@ public class All_Song_Fragment extends Fragment {
                 SharedPreferences preferences = getContext().getSharedPreferences("preff",Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor=preferences.edit();
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), view, Gravity.END);
-                popupMenu.inflate(R.menu.all_songs_interface_popup_menu);
+                popupMenu.inflate(R.menu.pop_up_menu_for_recently_added_and_favourite);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {

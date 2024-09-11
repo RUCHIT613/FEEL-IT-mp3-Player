@@ -93,7 +93,7 @@ public class miniplayer_widget extends AppWidgetProvider {
 
             views.setTextViewText(R.id.MINIPLAYER_WIDGET_SONG_NAME_TEXTVIEW,Song_Name);
             views.setTextViewText(R.id.MINIPLAYER_WIDGET_ARTIST_NAME_TEXTVIEW,Artist_Name);
-            Intent intent=new Intent(mcontext, MUSIC_PLAYER_ACTIVITY.class);
+            Intent intent=new Intent(mcontext, MainActivity.class);
             views.setOnClickPendingIntent(R.id.widget_relative,PendingIntent.getActivity(mcontext,0,intent,PendingIntent.FLAG_IMMUTABLE ));
 
             views.setOnClickPendingIntent(R.id.MINIPLAYER_WIDGET_PREVIOUS_IMAGEVIEW,get_pending_intent_for_music_player(context,"PREVIOUS_SONG"));

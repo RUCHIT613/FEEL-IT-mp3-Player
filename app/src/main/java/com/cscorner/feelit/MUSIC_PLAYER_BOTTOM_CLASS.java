@@ -74,6 +74,8 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
     private TextView end_of_track_sleep_timer_textview;
     private TextView custom_sleep_timer_textview;
 
+    private TextView queue_textview;
+
 
 
     private ConstraintLayout custom_timer_constraint_layout;
@@ -91,6 +93,7 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
         void BOTTOM_CLASS_ACTIVATE_SLEEP_TIMER_BOTTOM_FRAGMENT();
         void BOTTOM_CLASS_SLEEP_TIMER(int TIME);
 
+        void ACTIVATE_QUEUE();
 
 
     }
@@ -122,6 +125,7 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
             go_to_artist_textview=view.findViewById(R.id.go_to_artist);
             go_to_album_textview=view.findViewById(R.id.go_to_album);
             sleep_timer_textview=view.findViewById(R.id.sleep_timer_TEXTVIEW);
+            queue_textview=view.findViewById(R.id.QUEUE_TEXTVIEW);
 
             add_song_to_playlist_linear_layout=view.findViewById(R.id.add_song_to_playlist);
             add_song_to_multiple_playlist_add_button=view.findViewById(R.id.bottom_add_song_to_multiple_playlist_ADD_BUTTON);
@@ -250,6 +254,13 @@ public class MUSIC_PLAYER_BOTTOM_CLASS extends BottomSheetDialogFragment {
 //                        custom_timer_count=0;
 //                        count=0;
 //                    }
+                }
+            });
+            queue_textview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mlistener.ACTIVATE_QUEUE();
+                    dismiss();
                 }
             });
             activate_views(mpermission_for_add_song_to_playlist);

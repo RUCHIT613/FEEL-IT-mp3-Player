@@ -11,7 +11,6 @@
     tools:context=".MUSIC_PLAYER_ACTIVITY">
 
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/all_playlist_interface_single_screen"
 
@@ -32,16 +31,16 @@
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:tabTextColor="@color/white"
-            app:tabIndicatorColor="@color/cyan"
-
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.100000024"
+            app:tabIndicatorColor="@color/cyan"
+            app:tabIndicatorFullWidth="true"
             app:tabSelectedTextColor="@color/cyan"
-            app:tabIndicatorFullWidth="true">
+            app:tabTextColor="@color/white">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -69,124 +68,113 @@
             android:id="@+id/VIEWPAGER"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintHeight_percent="0.744"
+            app:layout_constraintBottom_toTopOf="@+id/miniplayer_ID"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.744"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/TABLAYOUT"
-            app:layout_constraintBottom_toTopOf="@+id/miniplayer_ID"
             tools:ignore="NotSibling" />
 
 
         <!--        <TextView-->
-<!--            android:id="@+id/textView"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0dp"-->
-<!--            android:autoSizeTextType="uniform"-->
-<!--            android:gravity="center_vertical"-->
-<!--            android:paddingLeft="20dp"-->
-<!--            android:text=""-->
-<!--            android:textColor="@color/cyan"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHeight_percent="0.1"-->
-<!--            app:layout_constraintHorizontal_bias="0.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintVertical_bias="0.0" />-->
+        <!--            android:id="@+id/textView"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:autoSizeTextType="uniform"-->
+        <!--            android:gravity="center_vertical"-->
+        <!--            android:paddingLeft="20dp"-->
+        <!--            android:text=""-->
+        <!--            android:textColor="@color/cyan"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHeight_percent="0.1"-->
+        <!--            app:layout_constraintHorizontal_bias="0.0"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            app:layout_constraintVertical_bias="0.0" />-->
 
 
+        <!--        <androidx.cardview.widget.CardView-->
+        <!--            android:id="@+id/new_playlist_contrain_layout2"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+
+        <!--            app:layout_constraintWidth_percent="1"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHeight_percent="0.13"-->
+        <!--            app:layout_constraintHorizontal_bias="1.0"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent"-->
+        <!--            app:layout_constraintVertical_bias="0.191">-->
+        <!--            <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--                android:id="@+id/new_playlist_contrain_layout"-->
+
+        <!--                android:layout_width="match_parent"-->
 
 
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:background="@drawable/ripple_effect"-->
+        <!--                android:onClick="add_new_playlist"-->
+        <!--                >-->
+
+        <!--                <androidx.cardview.widget.CardView-->
+        <!--                    android:layout_width="65dp"-->
+        <!--                    android:layout_height="65dp"-->
+        <!--                    android:layout_marginVertical="12dp"-->
+
+        <!--                    android:background="@color/black2"-->
+        <!--                    app:cardCornerRadius="100dp"-->
+        <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                    app:layout_constraintHeight_percent="1"-->
+        <!--                    app:layout_constraintHorizontal_bias="0.03"-->
+        <!--                    app:layout_constraintStart_toStartOf="parent"-->
+        <!--                    app:layout_constraintTop_toTopOf="parent"-->
+        <!--                    app:layout_constraintWidth_percent="0.2">-->
+
+        <!--                    <ImageButton-->
+        <!--                        android:layout_width="match_parent"-->
+        <!--                        android:layout_height="match_parent"-->
+        <!--                        android:background="@color/black2"-->
+
+        <!--                        android:src="@drawable/add_playlist_icon" />-->
+        <!--                </androidx.cardview.widget.CardView>-->
+
+        <!--                <TextView-->
+        <!--                    android:id="@+id/textView2"-->
+        <!--                    android:layout_width="0dp"-->
+        <!--                    android:layout_height="0dp"-->
+        <!--                    android:gravity="center_vertical"-->
+        <!--                    android:paddingLeft="10dp"-->
+
+        <!--                    android:text="NEW PLAYLIST"-->
+        <!--                    android:textColor="@color/orange"-->
+        <!--                    android:textSize="30dp"-->
+        <!--                    android:textStyle="bold"-->
+        <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                    app:layout_constraintHeight_percent="0.8"-->
+        <!--                    app:layout_constraintHorizontal_bias="0.609"-->
+        <!--                    app:layout_constraintStart_toStartOf="parent"-->
+        <!--                    app:layout_constraintTop_toTopOf="parent"-->
+        <!--                    app:layout_constraintWidth_percent="0.6" />-->
+        <!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <!--        </androidx.cardview.widget.CardView>-->
 
 
-
-
-
-
-
-
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:id="@+id/new_playlist_contrain_layout2"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-
-<!--            app:layout_constraintWidth_percent="1"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHeight_percent="0.13"-->
-<!--            app:layout_constraintHorizontal_bias="1.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            app:layout_constraintVertical_bias="0.191">-->
-<!--            <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--                android:id="@+id/new_playlist_contrain_layout"-->
-
-<!--                android:layout_width="match_parent"-->
-
-
-<!--                android:layout_height="wrap_content"-->
-<!--                android:background="@drawable/ripple_effect"-->
-<!--                android:onClick="add_new_playlist"-->
-<!--                >-->
-
-<!--                <androidx.cardview.widget.CardView-->
-<!--                    android:layout_width="65dp"-->
-<!--                    android:layout_height="65dp"-->
-<!--                    android:layout_marginVertical="12dp"-->
-
-<!--                    android:background="@color/black2"-->
-<!--                    app:cardCornerRadius="100dp"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintHeight_percent="1"-->
-<!--                    app:layout_constraintHorizontal_bias="0.03"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintWidth_percent="0.2">-->
-
-<!--                    <ImageButton-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="match_parent"-->
-<!--                        android:background="@color/black2"-->
-
-<!--                        android:src="@drawable/add_playlist_icon" />-->
-<!--                </androidx.cardview.widget.CardView>-->
-
-<!--                <TextView-->
-<!--                    android:id="@+id/textView2"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="0dp"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:paddingLeft="10dp"-->
-
-<!--                    android:text="NEW PLAYLIST"-->
-<!--                    android:textColor="@color/orange"-->
-<!--                    android:textSize="30dp"-->
-<!--                    android:textStyle="bold"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintHeight_percent="0.8"-->
-<!--                    app:layout_constraintHorizontal_bias="0.609"-->
-<!--                    app:layout_constraintStart_toStartOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:layout_constraintWidth_percent="0.6" />-->
-<!--            </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--        </androidx.cardview.widget.CardView>-->
-
-
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/All_playlist_recyclerview_all"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="0dp"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHeight_percent="0.615"-->
-<!--            app:layout_constraintHorizontal_bias="0.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/new_playlist_contrain_layout2"-->
-<!--            app:layout_constraintVertical_bias="0.01999998" />-->
-
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
+        <!--            android:id="@+id/All_playlist_recyclerview_all"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintHeight_percent="0.615"-->
+        <!--            app:layout_constraintHorizontal_bias="0.0"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/new_playlist_contrain_layout2"-->
+        <!--            app:layout_constraintVertical_bias="0.01999998" />-->
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -971,6 +959,7 @@
 
 
     </androidx.cardview.widget.CardView>
+    
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/MUSIC_PLAYER_INTERFACE"
@@ -1318,6 +1307,31 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/queue_interface"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_of_queue_interface"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.9"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/add_new_playlist_interface"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -1327,15 +1341,15 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="1.0">
 
         <ImageView
             android:id="@+id/back_button_of_add_playlist"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/back_button"
             android:background="@drawable/ripple_effect_for_songs"
             android:onClick="BACK_BUTTON_OF_ADD_NEW_PLAYLIST_INTERFACE"
+            android:src="@drawable/back_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.044"
@@ -1390,15 +1404,15 @@
             android:id="@+id/add_new_playlist_edit_text"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:textCursorDrawable="@color/cyan"
             android:layout_marginHorizontal="50dp"
             android:background="@color/black2"
-
             android:gravity="center"
-            android:hint="PLAYLIST NAME"
 
+            android:hint="PLAYLIST NAME"
             android:textColor="@color/cyan"
+
             android:textColorHint="@color/cyan"
+            android:textCursorDrawable="@color/cyan"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.1"
@@ -1412,10 +1426,10 @@
             android:layout_height="0dp"
             android:clickable="true"
             android:onClick="add_playlist_button"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.08"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
 
             app:layout_constraintTop_toBottomOf="@+id/add_new_playlist_edit_text"
             app:layout_constraintVertical_bias="0.120000005"
@@ -1428,16 +1442,16 @@
                 android:background="@drawable/add_new_playlist_button_drawable">
 
                 <TextView
-                    android:visibility="visible"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="ADD PLAYLIST"
-                    android:padding="14dp"
-                    android:textColor="@color/cyan"
-                    android:gravity="center"
-                    android:autoSizeTextType="uniform"
-                    android:textStyle="bold"
                     android:layout_margin="4dp"
+                    android:autoSizeTextType="uniform"
+                    android:gravity="center"
+                    android:padding="14dp"
+                    android:text="ADD PLAYLIST"
+                    android:textColor="@color/cyan"
+                    android:textStyle="bold"
+                    android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -1458,7 +1472,6 @@
             <!--                app:layout_constraintVertical_bias="0.272" />-->
 
         </androidx.cardview.widget.CardView>
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

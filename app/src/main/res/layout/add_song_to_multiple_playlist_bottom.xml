@@ -160,6 +160,24 @@
                 android:text="SLEEP TIMER"
                 android:gravity="center"/>
 
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true">
+        <TextView
+            android:id="@+id/QUEUE_TEXTVIEW"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/cyan"
+            android:clickable="true"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:text="QUEUE"
+            android:gravity="center"/>
         </androidx.cardview.widget.CardView>
 
 
