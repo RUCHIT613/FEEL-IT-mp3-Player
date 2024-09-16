@@ -5,6 +5,8 @@
         android:title="REMOVE FROM PLAYLIST"
 
         />
+    <item android:id="@+id/play_next"
+        android:title="PLAY NEXT"/>
     <item android:id="@+id/add_to_queue"
 
         android:title="ADD TO QUEUE"

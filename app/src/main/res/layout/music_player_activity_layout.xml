@@ -76,6 +76,8 @@
             tools:ignore="NotSibling" />
 
 
+
+
         <!--        <TextView-->
         <!--            android:id="@+id/textView"-->
         <!--            android:layout_width="match_parent"-->
@@ -1316,6 +1318,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back_button"
+            android:clickable="true"
+            android:onClick="BACK_BUTTON_OF_QUEUE_INTERFACE"
+            android:background="@drawable/ripple_effect_for_songs"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.044"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.023" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_of_queue_interface"
