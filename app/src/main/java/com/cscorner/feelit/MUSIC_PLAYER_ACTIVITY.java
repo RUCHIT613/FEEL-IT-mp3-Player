@@ -105,8 +105,9 @@ import java.util.Random;
 //                                             엄마!!! 니 아들는 이 앱가 만들었어요
 public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PLAYER_BOTTOM_CLASS.Set_ON_CLICKED_LISTENER {
     public Boolean PERMISSION_TO_DISPLAY_TOAST=false;
-     public static boolean is_app_active=false;
+    public static boolean is_app_active=false;
 
+    public static boolean PERMISSION_TO_COPY_ARRAYLIST=true;
 
     public int TOTAL_SONGS_OF_RECENTLY_ADDED;
     public static ArrayList<ITEM_CLASS_OF_VIEW_PAGER_FRAGMENT> arrayList_for_fragments;
@@ -770,17 +771,17 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 if (CURRENT_INTERFACE_POSITION == 1) { //FOR SYSTEM AND USER PLAYLIST
                     USER_CREATED_PLAYLIST_POSITION = preferences.getInt("key2", 0);
                     if (USER_CREATED_PLAYLIST_POSITION != 0) {
-                        temp_array_list = save_and_load_array.load_array_for_user_created_playlist(this, arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name());
+                        temp_array_list = copy_arraylist(save_and_load_array.load_array_for_user_created_playlist(this, arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name()));
 
                     } else {
 
-                        temp_array_list = arrayList_for_recently_added_playlist;
+                        temp_array_list = copy_arraylist(arrayList_for_recently_added_playlist);
                     }
                 } else if (CURRENT_INTERFACE_POSITION == 2) { //FOR ALBUM INTERFACE
                     CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME = preferences.getString(CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME_KEY, "");
 
                     if(Check_Whether_Album_or_Artist_Playlist_Exists.Check_Album_or_Artist_Playlist(CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME,true)){
-                        temp_array_list = load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, true);
+                        temp_array_list = copy_arraylist(load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, true));
                     }
                     else {
                         editor.putBoolean(MINIPLAYER_ACTIVATE_KEY,false);
@@ -790,7 +791,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 } else if (CURRENT_INTERFACE_POSITION == 3) {//FOR ARTIST INTERFACE
                     CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME = preferences.getString(CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME_KEY, "");
                     if(Check_Whether_Album_or_Artist_Playlist_Exists.Check_Album_or_Artist_Playlist(CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME,false)){
-                        temp_array_list = load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, false);
+                        temp_array_list = copy_arraylist(load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, false));
 
                     }
                     else {
@@ -799,12 +800,12 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                         editor.apply();
                     }
                 } else if (CURRENT_INTERFACE_POSITION == 0) {//FOR ALL SONG INTERFACE
-                    temp_array_list = load_all_songs_of_all_songs_interface_in_ascending.load_songs_in_ascending(arrayList_for_recently_added_playlist);
+                    temp_array_list = copy_arraylist(load_all_songs_of_all_songs_interface_in_ascending.load_songs_in_ascending(arrayList_for_recently_added_playlist));
                 }
 
                 if(preferences.getBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false)){        //THIS CHECKS WHETHER PLAY NEXT OR ADD TO QUEUE FEATURE WAS ACTIVE OR NOT
                     make_a_toast("QUEUE",true);
-                    temp_array_list=save_and_load_array.load_array_for_user_created_playlist(getApplicationContext(),"PLAY_NEXT_AND_ADD_TO_QUEUE");
+                    temp_array_list=copy_arraylist(save_and_load_array.load_array_for_user_created_playlist(getApplicationContext(),"PLAY_NEXT_AND_ADD_TO_QUEUE"));
                     is_add_to_queue_active=true;
                     is_play_next_active=false;
                 }
@@ -1418,6 +1419,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //    }
 
     public void PLAY_PLAYLIST(int PLAYLIST_POSITION) throws Exception {
+
         String PLAYLIST_NAME=arrayList_for_all_playlists.get(PLAYLIST_POSITION).getMPlaylist_name();
         if(PLAYLIST_NAME.equals("Recently Added")&& arrayList_for_recently_added_playlist.size()!=0){
             CURRENT_INTERFACE_POSITION = 1;
@@ -1426,8 +1428,14 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             ON_CLICK_PLAYLIST(PLAYLIST_POSITION);
             ACTIVATE_MUSIC_PLAYER_INTERFACE();
             set_all_active_flags_to_false();
+            PERMISSION_TO_COPY_ARRAYLIST=true;
+
             IS_RECENTLY_ADDED_PLAYLIST_ACTIVE = true;
             was_play_timer_activated_before=false;
+            is_add_to_queue_active=false;
+            is_play_next_active=false;
+            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
+            editor.apply();
             play(0);
             SharedPreferences preferences=getSharedPreferences("preff",MODE_PRIVATE);
             Count_for_Repeat_Button=preferences.getInt(REPEAT_MODE_KEY,3);
@@ -1449,7 +1457,13 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 set_all_active_flags_to_false();
                 CURRENT_PLAYING_PLAYLIST=PLAYLIST_NAME;
                 IS_USER_CREATED_PLAYLIST_ACTIVE = true;
+
                 was_play_timer_activated_before=false;
+                PERMISSION_TO_COPY_ARRAYLIST=true;
+                is_add_to_queue_active=false;
+                is_play_next_active=false;
+                editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
+                editor.apply();
                 play(0);
 
                 SET_REPEAT_MODE();
@@ -1490,7 +1504,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
         editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
         editor.apply();
-        load_data_into_array_list_for_recently_added();
+//        load_data_into_array_list_for_recently_added();
+        PERMISSION_TO_COPY_ARRAYLIST=true;
         play(current_song_index);
         SHUFFLE_SETUP();
         SET_REPEAT_MODE();
@@ -1626,7 +1641,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         }
         TOTAL_SONGS_OF_RECENTLY_ADDED=arrayList_for_recently_added_playlist.size();
 
-        arrayList_for_all_song_interface = arrayList_for_recently_added_playlist;
+//        arrayList_for_all_song_interface = arrayList_for_recently_added_playlist;
         arrayList_for_all_song_interface = load_all_songs_of_all_songs_interface_in_ascending.load_songs_in_ascending(arrayList_for_recently_added_playlist);
 
         if(arrayList_for_recently_added_playlist.size()!=0){      //BASICALLY THIS IS USE TO ADD SONGS WITH SAME ALBUM NAME IN arrayList_for_all_albums
@@ -1731,7 +1746,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //        is_user_created_playlist_active=false;
 //        is_all_playlist_interface_active=false;
         IS_RECENTLY_ADDED_PLAYLIST_ACTIVE = true;
-        load_data_into_array_list_for_recently_added();
+//        load_data_into_array_list_for_recently_added();
+
         Recently_added_recyclerview_elements_item_class current = arrayList_for_recently_added_playlist.get(0);
         long Album_ID = current.getMalbum_art();
         Uri albumArtUri = Uri.parse("content://media/external/audio/albumart/" + Album_ID);
@@ -1803,7 +1819,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //                is_user_created_playlist_active=false;
 //                is_all_playlist_interface_active=false;
                 if (!is_add_multiple_songs_selected_interface_is_long_pressed) {
-                    load_data_into_array_list_for_recently_added();
+//                    load_data_into_array_list_for_recently_added();
                     CURRENT_INTERFACE_POSITION = 1;
                     USER_CREATED_PLAYLIST_POSITION = 0;
                     current_song_index = position;
@@ -1815,7 +1831,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     is_play_next_active=false;
                     editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
                     editor.apply();
-
+                    PERMISSION_TO_COPY_ARRAYLIST=true;
                     play(position);
                     SharedPreferences preferences=getSharedPreferences("preff",MODE_PRIVATE);
                     Count_for_Repeat_Button=preferences.getInt(REPEAT_MODE_KEY,3);
@@ -1913,7 +1929,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                             save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
                             editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
                             editor.apply();
-                            load_data_into_array_list_for_recently_added();
+//                            load_data_into_array_list_for_recently_added();
                             return true;
                         }
 
@@ -2324,6 +2340,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     is_add_to_queue_active=false;
                     editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
                     editor.apply();
+                    PERMISSION_TO_COPY_ARRAYLIST=true;
                     play(position);
 
                     SET_REPEAT_MODE();
@@ -2359,48 +2376,43 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 
                             return true;
+                        } else if((item.getItemId()==R.id.play_next)&&(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false))){
+
+                            is_add_to_queue_active=true;
+
+                            Recently_added_recyclerview_elements_item_class Current=arrayList_for_user_created_playlist.get(position);
+                            make_a_toast(String.format("PNSong Name : %s",Current.getMsong_name()),true);
+                            if(is_play_next_active){
+                                if(PLAY_NEXT_SONG.equals(temp_array_list.get(current_song_index).getMsong_name())){
+                                    PLAY_NEXT_INDEX+=1;
+                                    make_a_toast("SONG IS SAME",true);
+
+                                }else{
+                                    PLAY_NEXT_INDEX=current_song_index+1;
+                                    PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
+                                    make_a_toast("SONG Changed",true);
+                                }
+
+                            }else{
+                                PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
+                                PLAY_NEXT_INDEX=current_song_index+1;
+                                is_play_next_active=true;
+                            }
+                            temp_array_list.add(PLAY_NEXT_INDEX,new Recently_added_recyclerview_elements_item_class(
+                                    Current.getMsong_name(),
+                                    Current.getMpath(),
+                                    Current.getMartist(),
+                                    Current.getMalbum_name(),
+                                    Current.getMduration(),
+                                    Current.getMalbum_art(),
+                                    false
+                            ));
+                            save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
+                            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
+                            editor.apply();
+//                            load_data_into_array_list_for_recently_added();
+                            return true;
                         }
-//                        else if((item.getItemId()==R.id.play_next)&&(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false))){
-//
-//                            is_add_to_queue_active=true;
-//
-//                            Recently_added_recyclerview_elements_item_class Current=arrayList_for_user_created_playlist.get(position);
-////                            make_a_toast(String.format("PNSong Name : %s",Current.getMsong_name()),true);
-//                            if(is_play_next_active){
-//                                if(PLAY_NEXT_SONG.equals(temp_array_list.get(current_song_index).getMsong_name())){
-//                                    PLAY_NEXT_INDEX+=1;
-////                                    make_a_toast("SONG IS SAME",true);
-//
-//                                }else{
-//                                    PLAY_NEXT_INDEX=current_song_index+1;
-//                                    PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
-//                                    make_a_toast("SONG Changed",true);
-//                                }
-//
-//                            }else{
-//                                PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
-//                                PLAY_NEXT_INDEX=current_song_index+1;
-//                                is_play_next_active=true;
-//                            }
-//
-//                            temp_array_list.add(PLAY_NEXT_INDEX,new Recently_added_recyclerview_elements_item_class(
-//                                    Current.getMsong_name(),
-//                                    Current.getMpath(),
-//                                    Current.getMartist(),
-//                                    Current.getMalbum_name(),
-//                                    Current.getMduration(),
-//                                    Current.getMalbum_art(),
-//                                    false
-//                            ));
-//                            save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
-//                            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
-//                            editor.apply();
-//
-//
-//
-////                            load_data_into_array_list_for_recently_added();
-//                            return true;
-//                        }
                         else if (item.getItemId()==R.id.add_to_queue) {
                             is_add_to_queue_active=true;
 
@@ -2417,7 +2429,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                                     Current.getMalbum_art(),
                                     false
                             ));
-                            load_data_into_array_list_for_recently_added();
+//                            load_data_into_array_list_for_recently_added();
                             arrayList_for_user_created_playlist=Update_User_Created_Playlist.get_updated_user_created_array_list(save_and_load_array.load_array_for_user_created_playlist(getApplicationContext(),PLAYLIST_NAME),arrayList_for_recently_added_playlist);
 
                             return true;
@@ -2573,30 +2585,35 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             //edit: i made sure that :)
 
             if((!is_add_to_queue_active)&&(!is_play_next_active)){
-                load_data_into_array_list_for_recently_added();
+//                load_data_into_array_list_for_recently_added();
+                if(PERMISSION_TO_COPY_ARRAYLIST){
+                    make_a_toast("PERMISSION GRANTED",true);
+                    if (CURRENT_INTERFACE_POSITION == 1) {
+                        if (USER_CREATED_PLAYLIST_POSITION == 0) {
+                            temp_array_list = copy_arraylist(arrayList_for_recently_added_playlist);
+                            make_a_toast(String.format("SIZE:%d",arrayList_for_recently_added_playlist.size()),true);
+                            make_a_toast("RECENTLY ADDED PLAYLIST IS LOADED",false);
 
-                if (CURRENT_INTERFACE_POSITION == 1) {
-                    if (USER_CREATED_PLAYLIST_POSITION == 0) {
-                        temp_array_list = arrayList_for_recently_added_playlist;
-                        make_a_toast(String.format("SIZE:%d",arrayList_for_recently_added_playlist.size()),true);
-                        make_a_toast("RECENTLY ADDED PLAYLIST IS LOADED",false);
+                        } else {
+                            temp_array_list = copy_arraylist(save_and_load_array.load_array_for_user_created_playlist(this, arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name()));
+                            make_a_toast(String.format("SIZE:%d",temp_array_list.size()),true);
+                            make_a_toast(String.format("USER CREATED PLAYLIST IS LOADED : %s", arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name()),false);
+                        }
+                    } else if (CURRENT_INTERFACE_POSITION == 2) {
+                        make_a_toast("ALBUM PLAYLIST",false);
+                        temp_array_list = copy_arraylist(load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, true));
 
-                    } else {
-                        temp_array_list = save_and_load_array.load_array_for_user_created_playlist(this, arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name());
-                        make_a_toast(String.format("SIZE:%d",temp_array_list.size()),true);
-                        make_a_toast(String.format("USER CREATED PLAYLIST IS LOADED : %s", arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name()),false);
+                    } else if (CURRENT_INTERFACE_POSITION == 3) {
+                        make_a_toast("ARTIST PLAYLIST",false);
+                        temp_array_list = copy_arraylist(load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, false));
+                    } else if (CURRENT_INTERFACE_POSITION == 0) {
+                        make_a_toast("ALL SONGS PLAYLIST",false);
+                        temp_array_list = copy_arraylist(load_all_songs_of_all_songs_interface_in_ascending.load_songs_in_ascending(arrayList_for_recently_added_playlist));
                     }
-                } else if (CURRENT_INTERFACE_POSITION == 2) {
-                    make_a_toast("ALBUM PLAYLIST",false);
-                    temp_array_list = load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, true);
-
-                } else if (CURRENT_INTERFACE_POSITION == 3) {
-                    make_a_toast("ARTIST PLAYLIST",false);
-                    temp_array_list = load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, false);
-                } else if (CURRENT_INTERFACE_POSITION == 0) {
-                    make_a_toast("ALL SONGS PLAYLIST",false);
-                    temp_array_list = load_all_songs_of_all_songs_interface_in_ascending.load_songs_in_ascending(arrayList_for_recently_added_playlist);
+                }else{
+                    make_a_toast("PERMISSION DENIED",true);
                 }
+
             }else{
                 make_a_toast(String.format("SIZE::%d",temp_array_list.size()),true);
 
@@ -2699,6 +2716,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    PERMISSION_TO_COPY_ARRAYLIST=false;
                     SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
                     Count_for_Repeat_Button=preferences.getInt(REPEAT_MODE_KEY,3);
                     Count_for_Shuffle_Button=preferences.getInt(SHUFFLE_MODE_KEY,0);
@@ -2706,6 +2724,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                         finish();
 
                     }else{
+
                         if(Count_for_Repeat_Button==1 && Count_for_Shuffle_Button>=0){  //FOR REPEAT ONE SONG
                             play(current_song_index);
                         } else if (Count_for_Repeat_Button==2 & Count_for_Shuffle_Button ==0) { //FOR REPEAT ALL SONGS
@@ -2818,6 +2837,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
         } else {
             new_media_player_permission = false;
+            PERMISSION_TO_COPY_ARRAYLIST=true;
             play(current_song_index);
             is_media_player_paused = false;
         }
@@ -2831,7 +2851,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     }
 
     public void NEXT_SONG() {
-
+        PERMISSION_TO_COPY_ARRAYLIST=false;
         was_play_timer_activated_before=false;
         if (Count_for_Shuffle_Button==1 &&(Count_for_Repeat_Button==2 ||( Count_for_Repeat_Button<1||Count_for_Repeat_Button>2) ) ) {
 
@@ -2862,6 +2882,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     }
 
     public void PREVIOUS_SONG() {
+        PERMISSION_TO_COPY_ARRAYLIST=false;
         was_play_timer_activated_before=false;
         if (media_player.get_media_player().getCurrentPosition() < 5000) {
 
@@ -3703,7 +3724,12 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
                 }
                 is_add_to_queue_active=false;
+                is_play_next_active=false;
+
+                editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
+                editor.apply();
                 was_play_timer_activated_before=false;
+                PERMISSION_TO_COPY_ARRAYLIST=true;
                 play(current_song_index);
                 SHUFFLE_SETUP();
 
@@ -3713,7 +3739,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             @Override
             public void more_button_ITEM_Clicked(View view, int position) {
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), view, Gravity.END);
-                popupMenu.inflate(R.menu.all_songs_interface_popup_menu);
+                popupMenu.inflate(R.menu.pop_menu_for_recently_added_songs_artist_album);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -3758,6 +3784,45 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                             is_add_to_queue_active=true;
                             save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
 
+                            return true;
+                        }
+                        else if((item.getItemId()==R.id.play_next)&&(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false))){
+
+                            is_add_to_queue_active=true;
+
+                            Recently_added_recyclerview_elements_item_class Current=array_list_for_album_playlist.get(position);
+//                            make_a_toast(String.format("PNSong Name : %s",Current.getMsong_name()),true);
+                            if(is_play_next_active){
+                                if(PLAY_NEXT_SONG.equals(temp_array_list.get(current_song_index).getMsong_name())){
+                                    PLAY_NEXT_INDEX+=1;
+//                                    make_a_toast("SONG IS SAME",true);
+                                    Toast.makeText(getApplicationContext(), "SONG is Same", Toast.LENGTH_SHORT).show();
+
+                                }else{
+                                    PLAY_NEXT_INDEX=current_song_index+1;
+                                    PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
+//                                    make_a_toast("SONG Changed",true);
+                                    Toast.makeText(getApplicationContext(), "song changed", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }else{
+                                PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
+                                PLAY_NEXT_INDEX=current_song_index+1;
+                                is_play_next_active=true;
+                            }
+                            temp_array_list.add(PLAY_NEXT_INDEX,new Recently_added_recyclerview_elements_item_class(
+                                    Current.getMsong_name(),
+                                    Current.getMpath(),
+                                    Current.getMartist(),
+                                    Current.getMalbum_name(),
+                                    Current.getMduration(),
+                                    Current.getMalbum_art(),
+                                    false
+                            ));
+                            save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
+                            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
+                            editor.apply();
+//                            load_data_into_array_list_for_recently_added();
                             return true;
                         }
                         return false;
@@ -3889,10 +3954,12 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     IS_ARTIST_PLAYLIST_ACTIVE = true;
                 }
                 is_add_to_queue_active=false;
-                editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,is_add_to_queue_active);
+                is_play_next_active=false;
+                editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,false);
                 editor.apply();
                 was_play_timer_activated_before=false;
 //                is_song_info_active=false;
+                PERMISSION_TO_COPY_ARRAYLIST=true;
                 play(current_song_index);
                 SHUFFLE_SETUP();
             }
@@ -3900,7 +3967,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             @Override
             public void more_button_ITEM_Clicked(View view, int position) {
                 PopupMenu popupMenu = new PopupMenu(view.getContext(), view, Gravity.END);
-                popupMenu.inflate(R.menu.all_songs_interface_popup_menu);
+                popupMenu.inflate(R.menu.pop_menu_for_recently_added_songs_artist_album);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
@@ -3927,6 +3994,45 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                                 make_a_toast("THERE ARE NO PLAYLiST",true);
                             }
                             return true;
+                        } else if((item.getItemId()==R.id.play_next)&&(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false))){
+
+                            is_add_to_queue_active=true;
+
+                            Recently_added_recyclerview_elements_item_class Current=array_list_for_artist_playlist.get(position);
+//                            make_a_toast(String.format("PNSong Name : %s",Current.getMsong_name()),true);
+                            if(is_play_next_active){
+                                if(PLAY_NEXT_SONG.equals(temp_array_list.get(current_song_index).getMsong_name())){
+                                    PLAY_NEXT_INDEX+=1;
+//                                    make_a_toast("SONG IS SAME",true);
+                                    Toast.makeText(getApplicationContext(), "SONG is Same", Toast.LENGTH_SHORT).show();
+
+                                }else{
+                                    PLAY_NEXT_INDEX=current_song_index+1;
+                                    PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
+//                                    make_a_toast("SONG Changed",true);
+                                    Toast.makeText(getApplicationContext(), "song changed", Toast.LENGTH_SHORT).show();
+                                }
+
+                            }else{
+                                PLAY_NEXT_SONG=temp_array_list.get(current_song_index).getMsong_name();
+                                PLAY_NEXT_INDEX=current_song_index+1;
+                                is_play_next_active=true;
+                            }
+                            temp_array_list.add(PLAY_NEXT_INDEX,new Recently_added_recyclerview_elements_item_class(
+                                    Current.getMsong_name(),
+                                    Current.getMpath(),
+                                    Current.getMartist(),
+                                    Current.getMalbum_name(),
+                                    Current.getMduration(),
+                                    Current.getMalbum_art(),
+                                    false
+                            ));
+                            save_and_load_array.save_array_for_user_created_playlist(getApplicationContext(),temp_array_list,"PLAY_NEXT_AND_ADD_TO_QUEUE");
+                            editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
+                            editor.apply();
+//                            load_data_into_array_list_for_recently_added();
+                            return true;
+
                         }else if(item.getItemId()==R.id.add_to_queue&&preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false)){
                             editor.putBoolean(PLAY_NEXT_AND_ADD_TO_QUEUE_KEY,true);
                             editor.apply();
@@ -6596,6 +6702,14 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     }
 
+    public ArrayList<Recently_added_recyclerview_elements_item_class> copy_arraylist(ArrayList<Recently_added_recyclerview_elements_item_class> arraylist){
+        make_a_toast("Playlist Is Copied ",true);
+        ArrayList<Recently_added_recyclerview_elements_item_class> Copied_arrayList=new ArrayList<>();
+        for(Recently_added_recyclerview_elements_item_class item : arraylist){
+            Copied_arrayList.add(item);
+        }
+        return Copied_arrayList;
+    }
 
     
 
