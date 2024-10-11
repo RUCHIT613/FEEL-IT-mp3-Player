@@ -2274,6 +2274,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         } else {
             make_a_toast("should_i_load_user_created_playlist : FALSE",false);
             arrayList_for_user_created_playlist = new ArrayList<>();
+            
 
             Picasso.get().load(R.drawable.logo).into(user_created_image_view);
 
@@ -6710,6 +6711,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         }
         return Copied_arrayList;
     }
+
+
 
     
 
