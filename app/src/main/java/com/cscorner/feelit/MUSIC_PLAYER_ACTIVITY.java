@@ -10,6 +10,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -98,12 +100,45 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.UUID;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.UUID;
 
 //                                             엄마!!! 니 아들는 이 앱가 만들었어요
 public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PLAYER_BOTTOM_CLASS.Set_ON_CLICKED_LISTENER {
+    private static final String TAG = "Bluetooth";
+    private BluetoothAdapter bluetoothAdapter;
+    private BluetoothSocket bluetoothSocket;
+    private InputStream inputStream;
+    private OutputStream outputStream;
+
+    // UUID of the Serial Port Profile (SPP)
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final String DEVICE_ADDRESS = "CC:DB:A7:68:A7:E6"; // Replace with your ESP32 Bluetooth address
+//    private EditText editText;
+    private volatile boolean stopThread = false;
+
+
+
     public Boolean PERMISSION_TO_DISPLAY_TOAST=false;
     public static boolean is_app_active=false;
 
@@ -498,6 +533,10 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        connectToDevice(DEVICE_ADDRESS);
+//
+//
         gestureDetector=new GestureDetector(this,new SWIPE_LISTENER());
 
         SLIDE_RIGHT_ANIMATION =AnimationUtils.loadAnimation(this,R.anim.slide_right_animation);
@@ -2274,7 +2313,10 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         } else {
             make_a_toast("should_i_load_user_created_playlist : FALSE",false);
             arrayList_for_user_created_playlist = new ArrayList<>();
-            
+//            if(PLAYLIST_NAME.equals("K-POP")){
+//                make_a_toast("temp",false);
+//                put_temp_songs();
+//            }
 
             Picasso.get().load(R.drawable.logo).into(user_created_image_view);
 
@@ -6681,6 +6723,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter_for_queue_interface);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.scrollToPosition(current_song_index);
         adapter_for_queue_interface.set_ON_CLICKED_LISTENER(new recently_added_adapter_class.OnCLICK_LISTENER() {
             @Override
             public void on_ITEM_Clicked(int position) throws Exception {
@@ -6710,6 +6753,462 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             Copied_arrayList.add(item);
         }
         return Copied_arrayList;
+    }
+
+
+
+    private void connectToDevice(String address) {
+//        showToast("2");
+        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
+//        showToast("3");
+        try {
+//            showToast("4");
+            bluetoothSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
+
+            bluetoothSocket.connect();
+            inputStream = bluetoothSocket.getInputStream();
+            outputStream = bluetoothSocket.getOutputStream();
+            listenForData();
+            showToast("Connected");
+
+        } catch (IOException e) {
+            Log.e(TAG, "Connection failed: " + e.getMessage());
+            showToast("Connection failed: " + e.getMessage());
+        }
+    }
+    public String receivedString="";
+    private void listenForData() {
+        new Thread(() -> {
+            byte[] buffer = new byte[1024];
+            int bytes;
+
+            // Continue reading while the socket is connected and the thread is not stopped
+            while (!stopThread && bluetoothSocket != null && bluetoothSocket.isConnected()) {
+                try {
+                    bytes = inputStream.read(buffer);
+                    if (bytes > 0) {
+                        String charr=new String(buffer, 0, bytes);
+                        switch(charr){
+                            case "PLAY_PAUSE":
+                                editor.putString("ACTION","PLAY_PAUSE");
+
+                                break;
+                            case "PREVIOUS_SONG":
+                                editor.putString("ACTION","PREVIOUS_SONG");
+                                break;
+
+                            case "NEXT_SONG":
+                                editor.putString("ACTION","NEXT_SONG");
+                                break;
+
+                        }
+                        editor.apply();
+
+//                        if()
+//                        while (!receivedString.equals(" ")){
+//                            dt=String.format("%s",dt+receivedString);
+//                        }
+                        showToast(charr);
+                        Log.d(TAG, "Received: " + charr);
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "Error reading data", e);
+                    break;
+                }
+            }
+        }).start();
+    }
+    private void showToast(String message) {
+        runOnUiThread(() -> Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show());
+    }
+    public void CONNECT(View view){
+        connectToDevice(DEVICE_ADDRESS);
+    }
+//    public void send (View view){
+//
+////        String message = editText.getText().toString();
+//        if (!message.isEmpty()) {
+//            try {
+//                outputStream.write(message.getBytes());  // Send message as bytes
+//                outputStream.write('\n');  // Optionally add a newline
+//                Log.d(TAG, "Message sent: " + message);
+//            } catch (IOException e) {
+//                Log.e(TAG, "Error sending data", e);
+//            }
+//        }
+//    }
+
+    public String dt = "";
+
+    public void dtt() {
+//        EditText editText = findViewById(R.id.ip_edittext);
+//        editText.setText("Text updated");
+    }
+    public void put_temp_songs(){
+        ArrayList<String> Songs=new ArrayList<>();
+
+        Songs.add("Dynamite");
+        Songs.add("피 땀 눈물");
+        Songs.add("Butter");
+        Songs.add("Mamacita 아야야");
+        Songs.add("Ko Ko Bop");
+        Songs.add("Stay Gold");
+        Songs.add("ON");
+        Songs.add("Lo Siento");
+        Songs.add("MIC Drop");
+        Songs.add("불타오르네");
+        Songs.add("DNA");
+        Songs.add("Permission to Dance");
+        Songs.add("War of Hormone");
+        Songs.add("쩔어");
+
+        Songs.add("Kill This Love");
+        Songs.add("Make It Right");
+        Songs.add("Not Today");
+        Songs.add("How You Like That");
+        Songs.add("Save ME");
+        Songs.add("FAKE LOVE");
+        Songs.add("작은 것들을 위한 시");
+        Songs.add("Life Goes On");
+        Songs.add("IDOL");
+        Songs.add("고민보다");
+        Songs.add("We are Bulletproof - the Eternal");
+        Songs.add("Airplane pt.2");
+        Songs.add("Zero O'Clock");
+        Songs.add("소우주");
+
+        Songs.add("Money");
+        Songs.add("Dionysus");
+        Songs.add("LALISA");
+        Songs.add("No More Dream");
+        Songs.add("I NEED U");
+        Songs.add("RUN");
+        Songs.add("Filter");
+        Songs.add("Epiphany");
+
+        Songs.add("Euphoria");
+        Songs.add("Chicken Noodle Soup");
+        Songs.add("대취타");
+        Songs.add("tokyo");
+        Songs.add("네시");
+        Songs.add("Pied Piper");
+        Songs.add("Black Swan");
+        Songs.add("Anpanman");
+        Songs.add("Love Shot");
+        Songs.add("붐바야");
+        Songs.add("On The Ground");
+        Songs.add("Spine Breaker");
+        Songs.add("Tempo");
+        Songs.add("RUN2U");
+
+        Songs.add("Boy In Luv");
+        Songs.add("Danger");
+        Songs.add("Ν.Ο");
+        Songs.add("으르렁");
+        Songs.add("MaMa Beat");
+        Songs.add("진격의 방탄");
+        Songs.add("색안경");
+        Songs.add("神메뉴");
+        Songs.add("MANIAC");
+        Songs.add("My Universe");
+        Songs.add("The Truth Untold");
+        Songs.add("We are bulletproof PT.2");
+        Songs.add("소리꾼");
+        Songs.add("It's Definitely You");
+
+        Songs.add("OH");
+        Songs.add("FEVER");
+        Songs.add("Back Door");
+        Songs.add("Mr. Simple");
+        Songs.add("미인아");
+        Songs.add("쏘리 쏘리");
+        Songs.add("One More Time");
+        Songs.add("DOMINO");
+        Songs.add("거미줄");
+        Songs.add("불장난");
+        Songs.add("강남스타일");
+        Songs.add("That That");
+        Songs.add("FOR YOU");
+        Songs.add("봄날");
+
+        Songs.add("Run Away");
+        Songs.add("Given-Taken");
+        Songs.add("별안간");
+        Songs.add("Good Boy Gone Bad");
+        Songs.add("잠시");
+        Songs.add("SOLO");
+        Songs.add("Butterfly");
+        Songs.add("뱁새");
+        Songs.add("Yet To Come");
+        Songs.add("친구");
+        Songs.add("달려라 방탄");
+        Songs.add("For Youth");
+        Songs.add("Young Forever");
+        Songs.add("My You");
+
+        Songs.add("Film out");
+        Songs.add("Best Of Me");
+        Songs.add("Magic");
+        Songs.add("CHEESE");
+        Songs.add("Pretty Savage");
+        Songs.add("Left and Right");
+        Songs.add("강박");
+        Songs.add("뚜두뚜두");
+        Songs.add("MORE");
+        Songs.add("LO$ER=LO♡ER");
+        Songs.add("Gone");
+        Songs.add("Gentleman");
+        Songs.add("방화");
+        Songs.add("Side Effects");
+
+        Songs.add("CIRCUS");
+        Songs.add("Coffee");
+        Songs.add("Whalien 52");
+        Songs.add("ParadoXXX Invasion");
+        Songs.add("Cat & Dog");
+        Songs.add("Drunk-Dazed");
+        Songs.add("Bad Decisions");
+        Songs.add("The Feels");
+        Songs.add("Wrap Me In Plastic");
+        Songs.add("Agust D");
+        Songs.add("CROWN");
+        Songs.add("Pink Venom");
+        Songs.add("Lie");
+        Songs.add("BEAUTIFUL MONSTER");
+
+        Songs.add("SO BAD");
+        Songs.add("ASAP");
+        Songs.add("Talk that Talk");
+        Songs.add("MIROH");
+        Songs.add("Time Out");
+        Songs.add("Shut Down");
+        Songs.add("Pandora's Box");
+        Songs.add("=");
+        Songs.add("Safety Zone");
+        Songs.add("Rush Hour");
+        Songs.add("Blue & Grey");
+        Songs.add("난 괜찮아");
+        Songs.add("So What");
+        Songs.add("Ma City");
+
+        Songs.add("DADDY");
+        Songs.add("House Party");
+        Songs.add("다라리");
+        Songs.add("Moon");
+        Songs.add("CASE 143");
+        Songs.add("SUPER BOARD");
+        Songs.add("The Astronaut");
+        Songs.add("Seoul Town Road");
+        Songs.add("Family Song");
+        Songs.add("Airplane");
+        Songs.add("Magic Shop");
+        Songs.add("승전가");
+        Songs.add("Hellevator");
+        Songs.add("Wings");
+
+        Songs.add("Obsession");
+        Songs.add("슈퍼 참치");
+        Songs.add("Like");
+        Songs.add("Tamed-Dashed");
+        Songs.add("Christmas EveL");
+        Songs.add("21세기 소녀");
+        Songs.add("Polaroid Love");
+        Songs.add("Blue Hour");
+        Songs.add("HOME");
+        Songs.add("Dreamers");
+        Songs.add("CHEER UP");
+        Songs.add("What is Love");
+        Songs.add("SCIENTIST");
+        Songs.add("Waste It On Me");
+
+        Songs.add("JUMP");
+        Songs.add("식혀");
+        Songs.add("Give Me Your TMI");
+        Songs.add("들꽃놀이");
+        Songs.add("Lonely");
+        Songs.add("자전거");
+        Songs.add("Still Life");
+        Songs.add("Serendipity");
+        Songs.add("하루만");
+        Songs.add("House Of Cards");
+        Songs.add("Converse High");
+        Songs.add("Tomorrow");
+        Songs.add("2! 3!");
+        Songs.add("흥탄소년단");
+
+        Songs.add("잡아줘");  // 노래 십삼 개
+        Songs.add("Louder than bombs");
+        Songs.add("Jamais Vu");
+        Songs.add("Shadow");
+        Songs.add("Ego");
+        Songs.add("VIBE");
+        Songs.add("뱅 뱅 뱅");
+        Songs.add("Fantastic Baby");
+        Songs.add("몬스터");
+        Songs.add("No.2");
+        Songs.add("Lights");
+        Songs.add("여기 봐");
+        Songs.add("이사");
+
+        Songs.add("Stigma");
+        Songs.add("눈, 코, 입");
+        Songs.add("Future");
+        Songs.add("Yun");
+        Songs.add("What if...");
+        Songs.add("Sugar Rush Ride");
+        Songs.add("Stay Alive");
+        Songs.add("⟭⟬Stay⟭⟬");
+        Songs.add("병");
+        Songs.add("UGH!");
+        Songs.add("HIP");
+        Songs.add("전야");
+        Songs.add("on the street");
+        Songs.add("너 같은 사람 또 없어");
+
+        Songs.add("직진");
+        Songs.add("안녕");
+        Songs.add("BOY");
+        Songs.add("Set Me Free Pt.2");
+        Songs.add("보조개");
+        Songs.add("스테이");
+        Songs.add("약속");
+        Songs.add("Christmas Love");
+        Songs.add("이 사랑");
+        Songs.add("Stay With Me");
+        Songs.add("You're My Garden");
+        Songs.add("Heartbeat");
+        Songs.add("Double Trouble Couple");
+        Songs.add("Smoke Sprite");
+
+        Songs.add("⟭⟬ 땡 ⟭⟬");
+        Songs.add("땡");
+        Songs.add("Like Crazy");
+        Songs.add("Beautiful");
+        Songs.add("이쁘다니까");
+        Songs.add("너만 보여");
+        Songs.add("In Silence");
+        Songs.add("숨");
+        Songs.add("Seesaw");
+        Songs.add("사람 Pt.2");
+        Songs.add("해금");
+        Songs.add("AMYGDALA");
+        Songs.add("환청");
+        Songs.add("TRUE");
+
+        Songs.add("Love Diamond");
+        Songs.add("Skool Luv Affair");
+        Songs.add("알아요");
+        Songs.add("Still With You");
+        Songs.add("The Planet");
+        Songs.add("Angel Pt. 1");
+        Songs.add("D-Day");
+        Songs.add("Rover");
+        Songs.add("다시 너를");
+        Songs.add("Paradise");
+        Songs.add("Pop star");
+        Songs.add("네가 분다");
+        Songs.add("It's you");
+        Songs.add("Bittersweet");
+
+        Songs.add("Persona");
+        Songs.add("내 방을 여행하는 법");
+        Songs.add("Lilith");
+        Songs.add("특");
+        Songs.add("Take Two");
+        Songs.add("Youtiful");
+        Songs.add("Face-off");
+        Songs.add("꽃");
+        Songs.add("Alone");
+        Songs.add("If I Ruled The World");
+        Songs.add("울고 싶지 않아");
+        Songs.add("Ring Ding Dong");
+        Songs.add("Seven");
+        Songs.add("퀸카");
+
+        Songs.add("TOMBOY");
+        Songs.add("Nxde");
+        Songs.add("Love Me Again");
+        Songs.add("누나 너무 예뻐");
+        Songs.add("0X1=LOVESONG");
+        Songs.add("Rainy Days");
+        Songs.add("도깨비집");
+        Songs.add("TOPLINE");
+        Songs.add("Hype Boy");
+        Songs.add("3D");
+        Songs.add("OMG");
+        Songs.add("Blue");
+        Songs.add("Slow Dancing");
+        Songs.add("빛나리");
+
+        Songs.add("썸 탈꺼야");
+        Songs.add("Back for More");
+        Songs.add("For Us");
+        Songs.add("Love Maze");
+        Songs.add("BONA BONA");
+        Songs.add("손오공");
+        Songs.add("Chasing That Feeling");
+        Songs.add("Standing Next to You");
+        Songs.add("Too Sad to Dance");
+        Songs.add("Happily Ever After");
+        Songs.add("Shot Glass of Tears");
+        Songs.add("Closer Than This");
+        Songs.add("Tinnitus");
+        Songs.add("Yes or No");
+
+        Songs.add("끝나지 않을 이야기");
+        Songs.add("내 눈에만 보여");
+        Songs.add("락");
+        Songs.add("MEGAVERSE");
+        Songs.add("FRI(END)S");
+        Songs.add("첫사랑");
+        Songs.add("한 번도 하지 못한 이야기");
+        Songs.add("Come Back To Me");
+        Songs.add("Sweet Venom");
+        Songs.add("Pass The Mic");
+        Songs.add("Hate You");
+        Songs.add("MAESTRO");
+        Songs.add("아주 Nice");
+        Songs.add("You & Me");
+
+        Songs.add("Would You");
+        Songs.add("Come Back Home");
+        Songs.add("Smeraldo Garden Marching Band");
+        Songs.add("i wonder...");
+        Songs.add("i don't know");
+        Songs.add("NEURON");
+        Songs.add("졸업");
+        Songs.add("길");
+        Songs.add("MAMA");
+        Songs.add("이불킥");
+
+
+
+        //SONGS WHICH DOES NOT ABLE TO DETECT
+        //Zero O'Clock
+        //N.O
+        //Pandora's Box
+        //What if...
+
+
+        for(int i=0;i<Songs.size();i++){
+
+            for(int j=0;j<arrayList_for_recently_added_playlist.size();j++){
+
+                if(Songs.get(i).equals(arrayList_for_recently_added_playlist.get(j).getMsong_name())){
+
+                    String SONG_NAME=arrayList_for_recently_added_playlist.get(j).getMsong_name();
+                    String PATH=arrayList_for_recently_added_playlist.get(j).getMpath();
+                    String ARTIST_NAME=arrayList_for_recently_added_playlist.get(j).getMartist();
+                    String ALBUM_NAME=arrayList_for_recently_added_playlist.get(j).getMalbum_name();
+                    int DURATION=arrayList_for_recently_added_playlist.get(j).getMduration();
+                    long ALBUM_ART=arrayList_for_recently_added_playlist.get(j).getMalbum_art();
+
+                    arrayList_for_user_created_playlist.add(new Recently_added_recyclerview_elements_item_class(SONG_NAME,PATH,ARTIST_NAME,ALBUM_NAME,DURATION,ALBUM_ART,false));
+
+                    break;
+                }
+            }
+        }
     }
 
 
