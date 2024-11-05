@@ -6734,6 +6734,33 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
             @Override
             public void more_button_ITEM_Clicked(View view, int position) {
+                SharedPreferences.Editor editor= preferences.edit();
+                CURRENT_SONG_POSITION_FOR_MORE_BUTTON = position;
+                PopupMenu popupMenu = new PopupMenu(view.getContext(), view, Gravity.END);
+                popupMenu.inflate(R.menu.queue_interface_popup_menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        if (item.getItemId() == R.id.remove_from_queue) {
+                            if(position!=current_song_index){
+
+                                temp_array_list.remove(position);
+                                adapter_for_queue_interface.notifyItemRemoved(position);
+                                if(position<current_song_index){
+                                    current_song_index-=1;
+                                }
+                            }else{
+                                make_a_toast("CAN'T REMOVE FROM QUEUE",true);
+                            }
+
+                            return true;
+
+                        }
+                        return false;
+                    }
+
+                });
+                popupMenu.show();
                 //REMOVE SONG FROM THE QUEUE
             }
 
