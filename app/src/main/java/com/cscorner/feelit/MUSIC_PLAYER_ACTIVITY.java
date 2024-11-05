@@ -1999,7 +1999,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         is_add_multiple_songs_selected_interface_is_long_pressed = false;
         add_multiple_songs_to_multiple_playlist.setVisibility(View.GONE);
         recently_added_playlist_constrain_layout.setVisibility(View.VISIBLE);
-        miniplayer.setVisibility(View.VISIBLE);
+        miniplayer.setVisibility(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false)?View.VISIBLE:View.GONE);
     }
 
     public void add_multiple_songs_to_multiple_playlist_activate_add_to_playlist_bottom_class(View view) {
@@ -2576,7 +2576,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     public void BACK_BUTTON_OF_EDIT_SONG_POSITION(View view) throws IOException {
 
         is_edit_song_position_is_long_pressed=false;
-        miniplayer.setVisibility(View.VISIBLE);
+        miniplayer.setVisibility(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false)?View.VISIBLE:View.GONE);
         music_player.setVisibility(View.GONE);
         edit_song_position_of_user_created_playlist_interface.setVisibility(View.GONE);
         user_created_playlist_contrain_layout.setVisibility(View.VISIBLE);
