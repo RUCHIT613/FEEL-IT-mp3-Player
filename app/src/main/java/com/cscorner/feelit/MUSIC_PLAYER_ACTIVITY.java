@@ -3786,7 +3786,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.more_button_item_1_for_all_songs_interface) {
+                        if (item.getItemId() == R.id.more_button_item_1) {
 
                             if (arrayList_for_all_playlists.size() > 2) {
                                 is_single_song_selected = true;
@@ -4014,7 +4014,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        if (item.getItemId() == R.id.more_button_item_1_for_all_songs_interface) {
+                        if (item.getItemId() == R.id.more_button_item_1) {
 
                             if (arrayList_for_all_playlists.size() > 2) {
                                 is_single_song_selected = true;
