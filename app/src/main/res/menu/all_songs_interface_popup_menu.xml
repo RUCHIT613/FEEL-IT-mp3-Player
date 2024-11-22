@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/more_button_item_1_for_all_songs_interface"
+
+        android:title="ADD TO PLAYLIST"
+        />
+    <item android:id="@+id/add_to_queue"
+
+        android:title="ADD TO QUEUE"
+        />
+
+
+</menu>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/more_button_user_created_playlist_remove_song"
+
+        android:title="REMOVE FROM PLAYLIST"
+
+        />
+    <item android:id="@+id/play_next"
+        android:title="PLAY NEXT"/>
+    <item android:id="@+id/add_to_queue"
+
+        android:title="ADD TO QUEUE"
+
+        />
+
+</menu>

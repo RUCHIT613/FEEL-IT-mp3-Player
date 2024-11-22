@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/delete_playlist_pop_up_menu_of_all_playlists_interface"
+        android:title="DELETE PLAYLIST"
+        />
+    <item android:id="@+id/play_the_playlist_pop_up_menu_of_all_playlist_interface"
+        android:title="PLAY PLAYLIST"/>
+</menu>

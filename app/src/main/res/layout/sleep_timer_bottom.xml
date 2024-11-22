@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/black"
+    android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true">
+            <TextView
+                android:id="@+id/sleep_timer_five_mins_TEXTVIEW"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:background="@drawable/ripple_effect_for_songs"
+                android:text="00:05"
+                android:gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true">
+            <TextView
+                android:id="@+id/sleep_timer_ten_mins_TEXTVIEW"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:background="@drawable/ripple_effect_for_songs"
+                android:text="00:10"
+                android:gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true">
+            <TextView
+                android:id="@+id/sleep_timer_fifteen_mins_TEXTVIEW"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:background="@drawable/ripple_effect_for_songs"
+                android:text="00:15"
+                android:gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true">
+            <TextView
+                android:id="@+id/end_of_the_track_timer_TEXTVIEW"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:background="@drawable/ripple_effect_for_songs"
+                android:text="END OF THE TRACK"
+
+                android:gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true">
+            <TextView
+                android:id="@+id/custom_timer_TEXTVIEW"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:clickable="true"
+                android:background="@drawable/ripple_effect_for_songs"
+                android:text="CUSTOM TIMER"
+
+                android:gravity="center"/>
+
+        </androidx.cardview.widget.CardView>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/sleep_timer_constriant_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="HOUR"
+            android:textColor="@color/gray2"
+
+            android:textStyle="bold"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/numberPicker_for_song_info_hour"
+            app:layout_constraintStart_toStartOf="@+id/numberPicker_for_song_info_hour"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <NumberPicker
+            android:id="@+id/numberPicker_for_song_info_hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:theme="@style/CustomNumberPickerStyle"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView6"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MINS"
+            android:textColor="@color/gray2"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/numberPicker_for_song_info_min"
+            app:layout_constraintEnd_toEndOf="@+id/numberPicker_for_song_info_min"
+            app:layout_constraintStart_toStartOf="@+id/numberPicker_for_song_info_min"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.051" />
+
+        <NumberPicker
+            android:id="@+id/numberPicker_for_song_info_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="50dp"
+            android:theme="@style/CustomNumberPickerStyle"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.706"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView6"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/numberPicker_for_song_info_min"
+            app:layout_constraintStart_toStartOf="@+id/numberPicker_for_song_info_hour"
+            app:layout_constraintTop_toBottomOf="@+id/numberPicker_for_song_info_hour"
+            app:layout_constraintVertical_bias="0.00999999">
+
+            <ImageView
+                android:id="@+id/custom_timer_from_num_pickers"
+                android:layout_width="150dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ripple_effect_for_songs"
+                android:clickable="true"
+                android:src="@drawable/check_icon" />
+
+
+        </androidx.cardview.widget.CardView>
+
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+</LinearLayout>

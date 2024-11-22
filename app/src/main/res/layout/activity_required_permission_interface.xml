@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    tools:context=".Required_Permission_Interface">
+
+<!--    <ScrollView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/required_permission_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:autoSizeTextType="uniform"
+            android:gravity="center"
+            android:text="REQUIRED PERMISSIONS"
+            android:textColor="@color/cyan"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.57"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/storage_access_textview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="20dp"
+            android:autoSizeTextType="uniform"
+            android:gravity="left"
+            android:text="STORAGE ACCESS"
+            android:textColor="@color/orange"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/required_permission_textview"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/storage_access_info_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Feel It needs permission to access external storage of your device"
+            android:textColor="@color/gray2"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/storage_access_textview"
+            app:layout_constraintTop_toBottomOf="@id/storage_access_textview"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/storage_access_grant_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="5dp"
+            android:clickable="true"
+            android:onClick="GRANT_STORAGE_ACCESS"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/storage_access_textview"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintHorizontal_bias="0.528"
+            app:layout_constraintStart_toStartOf="@id/storage_access_info_textview"
+            app:layout_constraintTop_toBottomOf="@id/storage_access_info_textview"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_percent="0.5">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/Constraint_Layout_of_Storage_Access_Grant_Button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/off_grant_button">
+
+                <TextView
+                    android:id="@+id/Textview_of_Storage_Access_Grant_Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+
+                    android:autoSizeTextType="uniform"
+                    android:gravity="center"
+                    android:text="GRANT"
+                    android:textColor="@color/green"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/phone_access_textview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+
+            android:autoSizeTextType="uniform"
+            android:gravity="left"
+            android:text="PHONE ACCESS"
+            android:textColor="@color/orange"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_percent="0.08"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/storage_access_grant_button"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/phone_access_info_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text="Feel It needs permission to access phone calls of your device"
+            android:textColor="@color/gray2"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/phone_access_textview"
+            app:layout_constraintTop_toBottomOf="@id/phone_access_textview"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_percent="0.8" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/phone_access_grant_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="5dp"
+            android:clickable="true"
+            android:onClick="GRANT_PHONE_ACCESS"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/phone_access_textview"
+            app:layout_constraintHeight_percent="0.06"
+            app:layout_constraintHorizontal_bias="0.528"
+            app:layout_constraintStart_toStartOf="@id/phone_access_info_textview"
+            app:layout_constraintTop_toBottomOf="@id/phone_access_info_textview"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintWidth_percent="0.5">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/Constraint_Layout_of_Phone_Access_Grant_Button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/off_grant_button">
+
+                <TextView
+                    android:id="@+id/Textview_of_Phone_Access_Grant_Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="4dp"
+
+                    android:autoSizeTextType="uniform"
+                    android:gravity="center"
+                    android:text="GRANT"
+                    android:textColor="@color/green"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+<!--    </ScrollView>-->
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
