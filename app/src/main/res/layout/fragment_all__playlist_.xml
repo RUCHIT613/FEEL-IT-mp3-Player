@@ -15,7 +15,8 @@
             android:id="@+id/new_playlist_contrain_layout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
+            app:cardBackgroundColor="#00000000"
+            app:contentPadding="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.13"

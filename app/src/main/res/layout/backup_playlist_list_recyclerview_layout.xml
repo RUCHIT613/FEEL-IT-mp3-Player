@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/ripple_effect_for_songs">
+    android:background="@drawable/ripple_effect_for_songs"
+    android:clickable="true"
+    app:cardBackgroundColor="#00000000"
+    >
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,23 +15,35 @@
         <TextView
             android:id="@+id/Playlist_name"
             android:layout_width="match_parent"
-            android:layout_marginHorizontal="10dp"
             android:layout_height="40dp"
+            android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="20dp"
             android:gravity="start"
             android:text="PLAYLIST NAME"
-            android:textColor="@color/cyan"
+            android:textColor="@color/white"
             android:textSize="30dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.9"
-            app:layout_constraintHorizontal_bias="0.126"
+            app:layout_constraintHorizontal_bias="0.526"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.6"
             app:layout_constraintWidth_percent="0.7" />
+
+        <ImageView
+            android:id="@+id/add_retrieve_playlist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cloud_download"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.955"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.466" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,4 +1,5 @@
 package com.cscorner.feelit;
+import static android.content.Context.MODE_PRIVATE;
 import static com.cscorner.feelit.App.CHANNEL_1_ID;
 
 import static com.cscorner.feelit.MainActivity.Permission_For_External_Storage;
@@ -95,6 +96,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 //import android.support.v4.media.session.MediaSessionCompat;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -123,8 +131,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-//                                             엄마!!! 니 아들는 이 앱가 만들었어요
+//                                             엄마!!! 니 아들는 이 앱가 만들었어
 public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PLAYER_BOTTOM_CLASS.Set_ON_CLICKED_LISTENER {
+    public FirebaseDatabase firebaseDatabase=FirebaseDatabase.getInstance();
+    public DatabaseReference databaseReference=firebaseDatabase.getReference();
+
+    public static FirebaseAuth auth=FirebaseAuth.getInstance();
+    public static FirebaseUser user= auth.getCurrentUser();
+
+
+    public RecyclerView recyclerView_for_retrieve_backup_playlist;
+    public adapter_for_BACKUP_PLAYLIST_LIST adapter_for_retrieve_playlist;
+
+    public TextView LOGIN_SIGN_OUT;
+
+
+
     private static final String TAG = "Bluetooth";
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothSocket bluetoothSocket;
@@ -241,6 +263,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     public static final String PLAY_NEXT_AND_ADD_TO_QUEUE_KEY ="key_for_play_next";
 
+    public static  final String FIRST_CHECK_PLAYLIST_KEY="key_of_first_check";
+
 
     //HOME ATTRIBUTES
 
@@ -315,7 +339,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     public static ArrayList<Recently_added_recyclerview_elements_item_class> arrayList_for_recently_added_playlist;
     private recently_added_adapter_class adapter_for_recently_added_playist;
     private static final int READ_EXTERNAL_STORAGE = 1;
-    private String filePath;
+    private String filePath;                                        //IT IS USED TO CHECK WHETHER A PARTICULAR SONG IS RINGTONE OR NOT
     private ImageView recently_added_image_view;
     private TextView recently_added_playlist_name_text_view;
     private TextView recently_added_total_songs_text_view;
@@ -409,7 +433,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     private boolean IS_SETTING_INTERFACE_ACTIVE=false;
     private ConstraintLayout setting_interface_constraint_layout;
 
-        //AUDIO CONNECTIVITY MODE
+        //AUDIO CONNECTIVITY MODE             //Reductant Code
     private ImageView radioButton_of_Bluetooth_device;
     private ImageView radioButton_of_Wired_device;
     private boolean is_radioButton_of_Bluetooth_device_selected;
@@ -533,8 +557,22 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.music_player_activity_layout);
+
+        Log.d("MyTag", "This is a debug message");
+
+        if(user!=null){
+            Log.d(TAG, "onCreate: "+user.getEmail().toString());
+            make_a_toast(user.getEmail().toString()+" HAS LOGGED IN",true);
+        }else{
+            make_a_toast("NOT",true);
+        }
+
+
+        LOGIN_SIGN_OUT=findViewById(R.id.LOGIN_BUTTON_SETTING);
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        connectToDevice(DEVICE_ADDRESS);
+//        connectToDevice(DEVICE_ADDRESS);             TO PREVENT DELAY WHEN APP IS STARTING
 //
 //
         gestureDetector=new GestureDetector(this,new SWIPE_LISTENER());
@@ -545,12 +583,13 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         FADE_OUT=AnimationUtils.loadAnimation(this,R.anim.fade_out_animation);
 
         is_activity_minimize=false;
-        setContentView(R.layout.music_player_activity_layout);
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         notificationManager=getSystemService(NotificationManager.class);
         preferences=getSharedPreferences("preff",MODE_PRIVATE);
         editor=preferences.edit();
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -558,6 +597,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         } else {
             setupPhoneStateListener();
         }
+
         UNPLUGGED_RECEIVER UNPLUGGEDRECIEVER =new UNPLUGGED_RECEIVER();
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(UNPLUGGEDRECIEVER, filter);
@@ -619,7 +659,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         user_created_total_songs_text_view = findViewById(R.id.total_songs_in_user_created_playlist_text_view);
         user_created_playlist_name_text_view = findViewById(R.id.playlist_name_of_user_created_playlist_TEXTVIEW);
 
-        //ALL INTERFACES  IMAGEVIEW AKA BUTTON
+        //ALL INTERFACES  IMAGEVIEW AKA BUTTON                                           //REDUCTANT CODE
         ALL_SONGS_INTERFACE_IMAGEVIEW = findViewById(R.id.all_songs_interface);
         ALL_PLAYLIST_INTERFACE_IMAGEVIEW = findViewById(R.id.all_playlist_interface);
         ALL_ALBUMS_INTERFACE_IMAGEVIEW = findViewById(R.id.all_album_interface);
@@ -666,6 +706,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         external_audio_control_play_next_mode_play_next_song=findViewById(R.id.play_next_song_mode_1);
         external_audio_control_play_next_mode_play_previous_song=findViewById(R.id.play_previous_song_mode_1);
 //        external_audio_control_play_next_mode_play_previous_v2_song=findViewById(R.id.play_previous_song_mode_v2_1);
+
+
 
         //INFO MESSAGE OF PLAY NEXT MODE -> PLAY NEXT SONG
         info_message_constrain_layout_of_next_song_mode_play_next_song=findViewById(R.id.Play_next_Play_next_song_mode_constraint_layout_test);//THIS IS A CONSTRAINT LAYOUT WHICH CONTAINS PLAY NEXT SONG AND ITS INFO MESSAGE OF PLAY NEXT MODE WHEN CLICKED
@@ -827,7 +869,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                         editor.apply();
                     }
 
-                } else if (CURRENT_INTERFACE_POSITION == 3) {//FOR ARTIST INTERFACE
+                } else if (CURRENT_INTERFACE_POSITION == 3) {//FOR ARTIST INTERFACE            //THERE MIGHT BE A PROBLEM HERE "Check_Whether_Album_or_Artist_Playlists_Exists" THIS CLASS IS CHECKING ONLY ALBUM NAME FOR BOTH ALBUM AND ARTIST
                     CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME = preferences.getString(CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME_KEY, "");
                     if(Check_Whether_Album_or_Artist_Playlist_Exists.Check_Album_or_Artist_Playlist(CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME,false)){
                         temp_array_list = copy_arraylist(load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, false));
@@ -911,103 +953,179 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             }
         });
 
-        mediaSession = new MediaSessionCompat(this, "f");
-        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        mediaSession.setMediaButtonReceiver(null);
+//        mediaSession = new MediaSessionCompat(this, "f");
+//        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+//                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+//        mediaSession.setMediaButtonReceiver(null);
+//
+//        PlaybackStateCompat.Builder playback = new PlaybackStateCompat.Builder()
+//                .setActions(PlaybackStateCompat.ACTION_PLAY |
+//                        PlaybackStateCompat.ACTION_PAUSE|
+//                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+//                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
+//                );
+//        mediaSession.setPlaybackState(playback.build());
+//        mediaSession.setActive(true);
+//        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+//
+//
+//
+//            @Override
+//            public void onPlay() {
+//                Log.d("NEXTttttttttttttttttttttttttttttttttttttttttt","PLAY");
+//                PLAY_AND_PAUSE();
+//                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+//            }
+//
+//            @Override
+//            public void onPause() {
+//                Log.d("NEXTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT","PAUSE");
+//                PLAY_AND_PAUSE();
+//                updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
+//            }
+//public int CO=0;
+//            @Override
+//            public void onSkipToNext() {
+//
+////                Log.d("DELAYYYYYYYYY",String.format("%d",System.currentTimeMillis()));
+//                updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT);
+//                CO+=1;
+//                Log.d("NEXTttttttttttttttttttttttttttttttttttttttttt",String.format("%d",CO));
+//
+//                DeviceConnectionChecker connectionChecker =new DeviceConnectionChecker(getApplicationContext());
+//
+//                SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
+//                boolean audio_connectivity_permission=preferences.getBoolean(AUDIO_CONNECTIVITY_MODE_KEY,false);
+////                if (connectionChecker.areEarphonesConnected()) {
+////                    current_song_index -= 1;
+////                    Shuffled_Array_Index_POSITION -=1;
+////
+////
+////                }
+//
+//                    String EVENT_NAME=preferences.getString(EXTERNAL_AUDIO_CONTROL_EVENT_KEY_FOR_NEXT_MODE,"PLAY_NEXT_SONG");
+////                    switch (EVENT_NAME) {
+////                        case "PLAY_NEXT_SONG":
+////                            NEXT_SONG();
+////                            break;
+////                        case "PLAY_PREVIOUS_SONG":
+////                            if(current_song_index<=0){
+////                                play(temp_array_list.size()-1);
+////                            }
+////                            else {
+////                                play(current_song_index-1);
+////                            }
+////                            break;
+////                        case "PLAY_PREVIOUS_SONG_V2":
+////                            PREVIOUS_SONG();
+////                            break;
+////                    }
+//
+//                ACTIVATE_EVENT(EVENT_NAME);
+//            }
+//
+//            @Override
+//            public void onSkipToPrevious() {
+//                Log.d("NEXTttttttttttttttttttttttttttttttttttttttttt","PREVIOUS");
+//                updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS);
+//                DeviceConnectionChecker connectionChecker =new DeviceConnectionChecker(getApplicationContext());
+//                SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
+////                if (connectionChecker.areEarphonesConnected()) {
+////                    current_song_index -= 1;
+////                    Shuffled_Array_Index_POSITION-=1;
+////
+////                }
+//
+//                    String EVENT_NAME=preferences.getString(EXTERNAL_AUDIO_CONTROL_EVENT_KEY_FOR_PREVIOUS_MODE,"PLAY_PREVIOUS_SONG_V2");
+////                    switch (EVENT_NAME) {
+////                        case "PLAY_NEXT_SONG":
+////                            NEXT_SONG();
+////                            break;
+////                        case "PLAY_PREVIOUS_SONG":
+////                            if(current_song_index<=0){
+////                                play(temp_array_list.size()-1);
+////                            }
+////                            else {
+////                                play(current_song_index-1);
+////                            }
+////                            break;
+////                        case "PLAY_PREVIOUS_SONG_V2":
+////                            PREVIOUS_SONG();
+////                            break;
+////                    }
+//                ACTIVATE_EVENT(EVENT_NAME);
+//
+//            }
+//        });
 
-        PlaybackStateCompat.Builder playback = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PLAY |
-                        PlaybackStateCompat.ACTION_PAUSE|
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
-                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                );
-        mediaSession.setPlaybackState(playback.build());
-        mediaSession.setActive(true);
+        mediaSession = new MediaSessionCompat(this, "AudioSession");
+
+        mediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+        );
+
+        PlaybackStateCompat.Builder stateBuilder =
+                new PlaybackStateCompat.Builder()
+                        .setActions(
+                                PlaybackStateCompat.ACTION_PLAY |
+                                        PlaybackStateCompat.ACTION_PAUSE |
+                                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                        PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        );
+
+        mediaSession.setPlaybackState(stateBuilder.build());
+
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
-
-
 
             @Override
             public void onPlay() {
+                Log.d("MEDIA", "PLAY");
+                playSong();
                 PLAY_AND_PAUSE();
-                updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
+                updateState(PlaybackStateCompat.STATE_PLAYING);
             }
 
             @Override
             public void onPause() {
+                Log.d("MEDIA", "PAUSE");
+                pauseSong();
                 PLAY_AND_PAUSE();
-                updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                updateState(PlaybackStateCompat.STATE_PAUSED);
             }
 
             @Override
             public void onSkipToNext() {
-                updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_NEXT);
-
-                DeviceConnectionChecker connectionChecker =new DeviceConnectionChecker(getApplicationContext());
-
-                SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
-                boolean audio_connectivity_permission=preferences.getBoolean(AUDIO_CONNECTIVITY_MODE_KEY,false);
-                if (connectionChecker.areEarphonesConnected()) {
-                    current_song_index -= 1;
-                    Shuffled_Array_Index_POSITION -=1;
-
-
-                }
-
-                    String EVENT_NAME=preferences.getString(EXTERNAL_AUDIO_CONTROL_EVENT_KEY_FOR_NEXT_MODE,"PLAY_NEXT_SONG");
-//                    switch (EVENT_NAME) {
-//                        case "PLAY_NEXT_SONG":
-//                            NEXT_SONG();
-//                            break;
-//                        case "PLAY_PREVIOUS_SONG":
-//                            if(current_song_index<=0){
-//                                play(temp_array_list.size()-1);
-//                            }
-//                            else {
-//                                play(current_song_index-1);
-//                            }
-//                            break;
-//                        case "PLAY_PREVIOUS_SONG_V2":
-//                            PREVIOUS_SONG();
-//                            break;
-//                    }
-
+                Log.d("MEDIA", "NEXT");
+                nextSong();
+                String EVENT_NAME=preferences.getString(EXTERNAL_AUDIO_CONTROL_EVENT_KEY_FOR_NEXT_MODE,"PLAY_NEXT_SONG");
                 ACTIVATE_EVENT(EVENT_NAME);
             }
 
             @Override
             public void onSkipToPrevious() {
-                updatePlaybackState(PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS);
-                DeviceConnectionChecker connectionChecker =new DeviceConnectionChecker(getApplicationContext());
-                SharedPreferences preferences =getSharedPreferences("preff",MODE_PRIVATE);
-                if (connectionChecker.areEarphonesConnected()) {
-                    current_song_index -= 1;
-                    Shuffled_Array_Index_POSITION-=1;
-
-                }
-
-                    String EVENT_NAME=preferences.getString(EXTERNAL_AUDIO_CONTROL_EVENT_KEY_FOR_PREVIOUS_MODE,"PLAY_PREVIOUS_SONG_V2");
-//                    switch (EVENT_NAME) {
-//                        case "PLAY_NEXT_SONG":
-//                            NEXT_SONG();
-//                            break;
-//                        case "PLAY_PREVIOUS_SONG":
-//                            if(current_song_index<=0){
-//                                play(temp_array_list.size()-1);
-//                            }
-//                            else {
-//                                play(current_song_index-1);
-//                            }
-//                            break;
-//                        case "PLAY_PREVIOUS_SONG_V2":
-//                            PREVIOUS_SONG();
-//                            break;
-//                    }
+                Log.d("MEDIA", "PREVIOUS");
+                previousSong();
+                String EVENT_NAME=preferences.getString(EXTERNAL_AUDIO_CONTROL_EVENT_KEY_FOR_PREVIOUS_MODE,"PLAY_PREVIOUS_SONG_V2");
                 ACTIVATE_EVENT(EVENT_NAME);
-
             }
         });
+
+        mediaSession.setActive(true);
+
+
+
+
+
+
+
+
+
+
+
+
+
         expanded=new RemoteViews(getPackageName(),R.layout.custom_notification);
 //
 //        AudioManager audioManager=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
@@ -1074,7 +1192,40 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             throw new RuntimeException(e);
         }
     }
+    private void updateState(int state) {
 
+        PlaybackStateCompat playbackState =
+                new PlaybackStateCompat.Builder()
+                        .setActions(
+                                PlaybackStateCompat.ACTION_PLAY |
+                                        PlaybackStateCompat.ACTION_PAUSE |
+                                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT |
+                                        PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                                        PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        )
+                        .setState(state,
+                                PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
+                                1)
+                        .build();
+
+        mediaSession.setPlaybackState(playbackState);
+    }
+
+    private void playSong() {
+        Log.d("PLAYER", "PLAYING");
+    }
+
+    private void pauseSong() {
+        Log.d("PLAYER", "PAUSED");
+    }
+
+    private void nextSong() {
+        Log.d("PLAYER", "NEXT SONG");
+    }
+
+    private void previousSong() {
+        Log.d("PLAYER", "PREVIOUS SONG");
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
@@ -1247,6 +1398,9 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     miniplayer_pause_play_image_view.setImageResource(R.drawable.play_icon);
                     music_player_play_and_pause_image_view.setImageResource(R.drawable.play_icon);
                     is_media_player_paused = true;
+                    permission_to_resume_the_song_from_telephony=false;
+
+
 
                     if(is_app_active){
                         media_player.pause_media_player();
@@ -1489,7 +1643,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             ArrayList<Recently_added_recyclerview_elements_item_class> OLD_ARRAYLIST=save_and_load_array.load_array_for_user_created_playlist(this,PLAYLIST_NAME);
             ArrayList<Recently_added_recyclerview_elements_item_class> NEW_ARRAYLIST=Update_User_Created_Playlist.get_updated_user_created_array_list(arrayList_for_recently_added_playlist,OLD_ARRAYLIST);
             if(NEW_ARRAYLIST.size()>0){
-                CURRENT_INTERFACE_POSITION = PLAYLIST_POSITION;
+                CURRENT_INTERFACE_POSITION = 1;
                 USER_CREATED_PLAYLIST_POSITION = PLAYLIST_POSITION;
                 Permission_To_Proceed=true;
                 current_song_index =0;
@@ -1620,7 +1774,6 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //
 //        }
     }
-
     @SuppressLint("Range")
     public void load_data_into_array_list_for_recently_added() {
         arrayList_for_recently_added_playlist = new ArrayList<>();
@@ -1696,6 +1849,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     if (current_item_of_Recently_Added.getMalbum_name()
                             .equals(current_item_of_All_ALbums.getMalbum_name())) {
                         is_duplicate = true;
+
                         break;
                     }
 
@@ -1705,6 +1859,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                             current_item_of_Recently_Added.getMalbum_art(),
                             current_item_of_Recently_Added.getMalbum_name(),
                             total_elements(current_item_of_Recently_Added.getMalbum_name(), true)));
+//                    Log.d("ALBUM",String.format("%d",bat));
+//                    bat+=1;
                 }
             }
         }
@@ -1721,6 +1877,9 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                     if (recently_added_current_item.getMartist()
                             .equals(all_artist_playlist_current_item.getMalbum_name())) {
                         is_duplicate = true;
+//                        Log.d(TAG, all_artist_playlist_current_item.getMalbum_name());
+
+
                         break;
                     }
                 }
@@ -1729,6 +1888,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                             recently_added_current_item.getMalbum_art(),
                             recently_added_current_item.getMartist(),
                             total_elements(recently_added_current_item.getMartist(), false)));
+
                 }
             }
         }
@@ -1777,11 +1937,15 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     @SuppressLint("Range")
     public void recently_added_playlist() throws IOException {
+//        databaseReference.child("EMAIL").child("email").setValue("ARRAYLIST");
         ScrollView scrollView=findViewById(R.id.scrollView_of_recently_added_playlist);
         permission_for_flicking=false;
         setting_button.setVisibility(View.GONE);
         set_all_interface_button_visibility(false);
         set_all_active_flags_to_false();
+
+
+
 //        is_all_album_interface_active=false;
 //        is_album_playlist_active=false;
 //        is_user_created_playlist_active=false;
@@ -2235,8 +2399,11 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 
     }
-
+    public String CHILD_PLAYLIST_KEY="";
+//    public ArrayList<Recently_added_recyclerview_elements_item_class> database_arraylist=new ArrayList<>();
     public void user_created_playlist(String PLAYLIST_NAME, int PLAYLIST_POSITION) throws IOException {
+        CHILD_PLAYLIST_KEY=PLAYLIST_NAME;
+
         ScrollView scrollView=findViewById(R.id.scrollview_of_user_created_playlist);
         permission_for_flicking=false;
         if(PLAYLIST_NAME.equals("Favourite")){
@@ -2260,39 +2427,50 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         boolean should_i_load_user_created_playlist = preferences.getBoolean(PLAYLIST_NAME, false);
         if (should_i_load_user_created_playlist) {
 //            arrayList_for_user_created_playlist=
+            if(preferences.getBoolean(FIRST_CHECK_PLAYLIST_KEY+PLAYLIST_NAME,false)){
+                arrayList_for_user_created_playlist = Update_User_Created_Playlist.check_by_song_name(arrayList_for_recently_added_playlist, save_and_load_array.load_array_for_user_created_playlist(this, PLAYLIST_NAME));
+                editor.putBoolean(FIRST_CHECK_PLAYLIST_KEY+PLAYLIST_NAME,false);
+                editor.apply();
+                Log.d("FIRST_OR_NOT", "FIRST TIME");
+            }else{
+                arrayList_for_user_created_playlist=Update_User_Created_Playlist.get_updated_user_created_array_list(arrayList_for_recently_added_playlist, save_and_load_array.load_array_for_user_created_playlist(this, PLAYLIST_NAME));
+                Log.d("FIRST_OR_NOT", "NOT FIRST TIME");
+            }
 
-            arrayList_for_user_created_playlist = Update_User_Created_Playlist.get_updated_user_created_array_list(arrayList_for_recently_added_playlist, save_and_load_array.load_array_for_user_created_playlist(this, PLAYLIST_NAME));
-            make_a_toast("should_i_load_user_created_playlist : TRUE",false);
+            Log.d(TAG, String.format("%d",arrayList_for_user_created_playlist.size()));
+            if(arrayList_for_user_created_playlist.size()!=0){
+                make_a_toast("should_i_load_user_created_playlist : TRUE",false);
+                Log.d("SFHDJFDHFDKFHSDFKHFDFJDHFf", String.format("%s",arrayList_for_user_created_playlist.get(0).getMsong_name()));
+                Recently_added_recyclerview_elements_item_class current = arrayList_for_user_created_playlist.get(0);
+                long Album_ID = current.getMalbum_art();
+                Uri albumArtUri = Uri.parse("content://media/external/audio/albumart/" + Album_ID);
 
-            Recently_added_recyclerview_elements_item_class current = arrayList_for_user_created_playlist.get(0);
-            long Album_ID = current.getMalbum_art();
-            Uri albumArtUri = Uri.parse("content://media/external/audio/albumart/" + Album_ID);
 
-
-
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            retriever.setDataSource(current.getMpath());
+                //WHAT U CAN DO IS THAT WHEN THIS PLAYLIST IS OPEN JUST SCAN ALL THE SONGS OF THE PLAYLIST WITH RECENTLY ADDED AND IT WILL FIX THE PROBLEM
+                //EDIT :  IT IS FINALLY FIXED NOW
+                MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                retriever.setDataSource(current.getMpath());
 
 //            ADD_HOME_SCREEN_SHORTCUT(current.getMpath(),PLAYLIST_NAME);
 
-            byte[] albumArtBytes = retriever.getEmbeddedPicture();
-            if (albumArtBytes != null) {
-                Bitmap albumArtBitmap = BitmapFactory.decodeByteArray(albumArtBytes, 0, albumArtBytes.length);
+                byte[] albumArtBytes = retriever.getEmbeddedPicture();
+                if (albumArtBytes != null) {
+                    Bitmap albumArtBitmap = BitmapFactory.decodeByteArray(albumArtBytes, 0, albumArtBytes.length);
 
 
-                File tempFile = createTempFile("album_art", ".jpg");
-                try {
-                    FileOutputStream fos = new FileOutputStream(tempFile);
-                    albumArtBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-                    fos.flush();
-                    fos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    File tempFile = createTempFile("album_art", ".jpg");
+                    try {
+                        FileOutputStream fos = new FileOutputStream(tempFile);
+                        albumArtBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                        fos.flush();
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
 // Get the Uri of the temporary file
-                Uri uri = Uri.fromFile(tempFile);
-                Picasso.get().load(uri).into(user_created_image_view);
+                    Uri uri = Uri.fromFile(tempFile);
+                    Picasso.get().load(uri).into(user_created_image_view);
 
 
 
@@ -2301,14 +2479,16 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 //            music_player_album_art_image_view.setImageBitmap(albumArtBitmap);
 //            miniplayer_album_art_imageview.setImageBitmap(albumArtBitmap);
 
-                // Now you have the album art bitmap, you can display it or process it further
-            } else {
-                // No album art available
-                Picasso.get().load(R.drawable.logo).into(user_created_image_view);
+                    // Now you have the album art bitmap, you can display it or process it further
+                } else {
+                    // No album art available
+                    Picasso.get().load(R.drawable.logo).into(user_created_image_view);
 
+                }
+
+                retriever.release();
             }
 
-            retriever.release();
 
 
 
@@ -2324,13 +2504,17 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             Picasso.get().load(R.drawable.logo).into(user_created_image_view);
 
         }
-        if(!PLAYLIST_NAME.equals("Favourite")){
-            if(preferences.getBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+PLAYLIST_NAME,false)){
-                make_a_toast("Backup Found",true);
-            }else {
-                make_a_toast("Backup Didn't Found",true);
-            }
-        }
+
+//        database_arraylist=copy_arraylist(arrayList_for_user_created_playlist);
+//        if(!PLAYLIST_NAME.equals("Favourite")){
+//            if(preferences.getBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+PLAYLIST_NAME,false)){
+//                make_a_toast("Backup Found",true);
+//            }else {
+//                make_a_toast("Backup Didn't Found",true);
+//            }
+//        }
+//        databaseReference.child(PLAYLIST_NAME).setValue(String.format("%s",arrayList_for_user_created_playlist.size()));
+
         user_created_playlist_contrain_layout.startAnimation(FADE_IN);
         user_created_playlist_contrain_layout.setVisibility(View.VISIBLE);
 
@@ -2411,6 +2595,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
                             if (arrayList_for_user_created_playlist.size() != 0 ) {
                                 save_user_playlist(arrayList_for_user_created_playlist, PLAYLIST_NAME);
+
                                 editor.putBoolean(PLAYLIST_NAME,true);
 
 
@@ -2476,7 +2661,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                                     false
                             ));
 //                            load_data_into_array_list_for_recently_added();
-                            arrayList_for_user_created_playlist=Update_User_Created_Playlist.get_updated_user_created_array_list(save_and_load_array.load_array_for_user_created_playlist(getApplicationContext(),PLAYLIST_NAME),arrayList_for_recently_added_playlist);
+                            Log.d("SIZE OF UPDATED ARRAY","text");
+//                            arrayList_for_user_created_playlist=Update_User_Created_Playlist.get_updated_user_created_array_list(save_and_load_array.load_array_for_user_created_playlist(getApplicationContext(),PLAYLIST_NAME),arrayList_for_recently_added_playlist);
 
                             return true;
 
@@ -2641,12 +2827,13 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                             make_a_toast("RECENTLY ADDED PLAYLIST IS LOADED",false);
 
                         } else {
+                            Log.d("USER PLAY PLAYLIST POSITION-----------------------------",String.format("%d",USER_CREATED_PLAYLIST_POSITION));
                             temp_array_list = copy_arraylist(save_and_load_array.load_array_for_user_created_playlist(this, arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name()));
                             make_a_toast(String.format("SIZE:%d",temp_array_list.size()),true);
                             make_a_toast(String.format("USER CREATED PLAYLIST IS LOADED : %s", arrayList_for_all_playlists.get(USER_CREATED_PLAYLIST_POSITION).getMPlaylist_name()),false);
                         }
                     } else if (CURRENT_INTERFACE_POSITION == 2) {
-                        make_a_toast("ALBUM PLAYLIST",false);
+                        make_a_toast("ALBUM PLAYLIST",true);
                         temp_array_list = copy_arraylist(load_songs_of_given_album_or_artist.LOAD_ARRAY_OF_THE_ALBUM_OR_ARTIST(arrayList_for_recently_added_playlist, CURRENT_ALBUM_OR_ARTIST_PLAYLIST_NAME, true));
 
                     } else if (CURRENT_INTERFACE_POSITION == 3) {
@@ -3404,6 +3591,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         }
 
     }
+
+
     public void BACK_BUTTON_OF_ADD_NEW_PLAYLIST_INTERFACE(View view){
         permission_for_flicking=true;
         setting_button.setVisibility(View.VISIBLE);
@@ -4292,8 +4481,20 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     @Override
     protected void onResume() {
+
         super.onResume();
-        make_a_toast("resume",false);
+//        make_a_toast("resume",true);
+        user= auth.getCurrentUser();
+        if(user!=null){
+            LOGIN_SIGN_OUT.setText("SIGN OUT");
+        }else{
+            LOGIN_SIGN_OUT.setText("SIGN IN");
+        }
+
+        recyclerView_for_retrieve_backup_playlist=findViewById(R.id.retrieve_playlist_recyclerview);
+        recyclerView_for_retrieve_backup_playlist.setVisibility(View.GONE);
+
+
 
         if(is_activity_minimize){
             is_activity_minimize=false;
@@ -4616,6 +4817,10 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         RemoteViews expanded=new RemoteViews(getPackageName(),R.layout.custom_notification);
 //        expanded.setInt(R.layout.custom_notification, "setBackgroundColor", getResources().getColor(R.color.black));
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        Log.d("current Index",String.format("%d",current_song_index));
+        if(current_song_index<0){
+            current_song_index=temp_array_list.size()-1;
+        }
         retriever.setDataSource(temp_array_list.get(current_song_index).getMpath());
         Intent intent = new Intent(this, MUSIC_PLAYER_ACTIVITY.class);
         int iconResId = is_media_player_paused ? R.drawable.play_icon : R.drawable.pause;
@@ -4978,6 +5183,14 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         SETTING_OPTION_BUTTON_FUNC();
     }
     public void SETTING_OPTION_BUTTON_FUNC(){
+
+        if(user!=null){
+            LOGIN_SIGN_OUT.setText("SIGN OUT");
+        }else{
+            LOGIN_SIGN_OUT.setText("SIGN IN");
+        }
+
+
         count_for_option_button+=1;
         AnimatedVectorDrawable firstAnimation = (AnimatedVectorDrawable) ContextCompat.getDrawable(this, R.drawable.setting_start_anim);
         AnimatedVectorDrawable secondAnimation = (AnimatedVectorDrawable) ContextCompat.getDrawable(this, R.drawable.setting_end_anim);
@@ -5038,6 +5251,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
         }
         else {
+            recyclerView_for_retrieve_backup_playlist.setVisibility(View.GONE);
+
             firstAnimation.stop();
             setting_button.setImageDrawable(secondAnimation);
 
@@ -6852,7 +7067,9 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         runOnUiThread(() -> Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show());
     }
     public void CONNECT(View view){
-        connectToDevice(DEVICE_ADDRESS);
+//        connectToDevice(DEVICE_ADDRESS);
+        startActivity(new Intent(MUSIC_PLAYER_ACTIVITY.this, LOGIN.class));
+
     }
 //    public void send (View view){
 //
@@ -6904,7 +7121,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         Songs.add("고민보다");
         Songs.add("We are Bulletproof - the Eternal");
         Songs.add("Airplane pt.2");
-        Songs.add("Zero O'Clock");
+        Songs.add("00:00");
         Songs.add("소우주");
 
         Songs.add("Money");
@@ -6933,7 +7150,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
         Songs.add("Boy In Luv");
         Songs.add("Danger");
-        Songs.add("Ν.Ο");
+        Songs.add("N.O");
         Songs.add("으르렁");
         Songs.add("MaMa Beat");
         Songs.add("진격의 방탄");
@@ -7214,7 +7431,15 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         Songs.add("And I'm here");
         Songs.add("Hush");
         Songs.add("첫눈처럼 너에게 가겠다");
+
         Songs.add("Who are you");
+        Songs.add("Blue Moon");
+        Songs.add("Full Moon");
+        Songs.add("아직 너의 시간에 살아");
+        Songs.add("JJAM");
+        Songs.add("Yours");
+        Songs.add("네게 닿을 때까지");
+
 
 
 
@@ -7244,6 +7469,199 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
                 }
             }
         }
+    }
+    public void login(View view){
+        if(user!=null){
+            auth.signOut();
+        }
+        startActivity(new Intent(MUSIC_PLAYER_ACTIVITY.this,LOGIN.class));
+
+    }
+
+
+    public void SAVE_TO_DATABASE(View view){
+        user= auth.getCurrentUser();
+        if(user!=null){
+            if(arrayList_for_user_created_playlist.size()!=0){
+                databaseReference.child(String.format("%s",user.getUid().toString())).child(CHILD_PLAYLIST_KEY).setValue(String.format("%s",save_and_load_array.return_array_string(this,arrayList_for_user_created_playlist)));
+            }else{
+                make_a_toast("PLAYLIST IS EMPTY",true);
+            }
+        }else{
+            Toast.makeText(this, "SIGN IN IS REQUIRED", Toast.LENGTH_SHORT).show();
+        }
+    }
+//    public void RETRIEVE_USER_PLAYLISTS(View view){
+//
+//        recyclerView = findViewById(R.id.retrieve_playlist_recyclerview);
+//        recyclerView.setVisibility(View.VISIBLE);
+//        recyclerView.setHasFixedSize(true);
+//        ArrayList<String> arrayList=new ArrayList<>();
+//        arrayList=get_retrieve_playlist();
+//        adapter_for_retrieve_playlist = new adapter_for_BACKUP_PLAYLIST_LIST(arrayList);
+//        layoutManager = new LinearLayoutManager(this);
+//        recyclerView.setLayoutManager(layoutManager);
+//        recyclerView.setAdapter(adapter_for_retrieve_playlist);
+//        Toast.makeText(this, String.format("%d",arrayList.size()), Toast.LENGTH_SHORT).show();
+//    }
+//    public ArrayList<String> get_retrieve_playlist(){
+//        ArrayList<String> arrayList=new ArrayList<String>();
+//        databaseReference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+////                StringBuilder keys = new StringBuilder();
+//
+//                for (DataSnapshot child : snapshot.getChildren()) {
+//                    String key=child.getKey();
+//                    arrayList.add(String.format("%s",key));
+//                    Log.d("CHILDREN", key);
+//
+//
+//                }
+//
+//
+//
+////                    txtKeys.setText(keys.toString()); // Show keys in TextView
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//            }
+//        });
+//        Toast.makeText(this, String.format("MSG %d",arrayList.size()), Toast.LENGTH_SHORT).show();
+//        return arrayList;
+//    }
+
+public void RETRIEVE_USER_PLAYLISTS(View view) {
+    if(user!=null){
+        recyclerView = findViewById(R.id.retrieve_playlist_recyclerview);
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.setHasFixedSize(true);
+
+        get_retrieve_playlist(new PlaylistCallback() {
+            @Override
+            public void onCallback(ArrayList<String> arrayList) {
+                adapter_for_retrieve_playlist = new adapter_for_BACKUP_PLAYLIST_LIST(arrayList);
+                adapter_for_retrieve_playlist.SET_ON_CLICK(new adapter_for_BACKUP_PLAYLIST_LIST.set_on_click_listener() {
+                    @Override
+                    public void RETRIEVED_PLAYLIST_NAME(String RETRIEVED_PLAYLIST) {
+                        ADD_PLAYLIST(RETRIEVED_PLAYLIST);
+                    }
+                });
+                layoutManager = new LinearLayoutManager(MUSIC_PLAYER_ACTIVITY.this);
+                recyclerView.setLayoutManager(layoutManager);
+                recyclerView.setAdapter(adapter_for_retrieve_playlist);
+
+                Toast.makeText(MUSIC_PLAYER_ACTIVITY.this,
+                        String.format("Loaded %d playlists", arrayList.size()),
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+}
+
+    public void get_retrieve_playlist(PlaylistCallback callback) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        user=auth.getCurrentUser();
+        databaseReference.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    String key = child.getKey();
+                    arrayList.add(key);
+                    Log.d("CHILDREN", key);
+                }
+
+                callback.onCallback(arrayList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("FIREBASE", "Error loading playlists", error.toException());
+            }
+        });
+    }
+
+    // Callback interface
+    public interface PlaylistCallback {
+        void onCallback(ArrayList<String> playlist);
+    }
+
+
+
+
+
+
+    public void ADD_PLAYLIST(String New_Playlist){
+//        String New_Playlist = add_new_playlist_edit_text.getText().toString();
+
+            boolean permission=check_whether_song_or_playlist_already_exists.check_the_playlist(arrayList_for_all_playlists,New_Playlist);
+            if(permission){
+                make_a_toast(String.format("%s Playlist Added",New_Playlist),true);
+
+
+                arrayList_for_all_playlists.add(arrayList_for_all_playlists.size()-1,new Playlists_recycler_item_class(100, New_Playlist, false));
+
+//                adapter_for_all_playlist.notifyItemInserted(arrayList_for_all_playlists.size()-2);
+
+
+                ALL_PLAYLIST_FRAGMENT.NOTIFY_PLAYLIST_INSERTED(arrayList_for_all_playlists.size()-2);  //THIS CALLS METHOD IN ALL PLAYLIST FRAGMENT TO NOTIFY THAT PLAYLIST HAS TO BE INSERTED,DUE TO ADAPTER BEING IN ALL PLAYLIST FRAGMENT
+//                make_a_toast(String.format("%d",arrayList_for_all_playlists.size()));
+                save_and_load_array.save_array_for_all_playlist(this, arrayList_for_all_playlists);
+                SharedPreferences preferences = getSharedPreferences("preff", MODE_PRIVATE);
+                SharedPreferences preferences2 = getSharedPreferences("name2", MODE_PRIVATE);
+
+                SharedPreferences.Editor editor = preferences.edit();
+                SharedPreferences.Editor editor2=preferences2.edit();
+
+
+//                if (preferences.getBoolean(New_Playlist,false) &&preferences.getBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+New_Playlist,false)) {
+//                    String DATA=null;
+
+                    databaseReference
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String DATA = snapshot.child(user.getUid().toString()).child(New_Playlist).getValue().toString();
+                                    Log.d("SIZE", String.format("%d",DATA.length()));
+                                    Log.d("FIREBASE", "DATA: " + DATA);
+                                    editor.putBoolean(New_Playlist,true);
+
+                                    editor2.putString(New_Playlist,DATA);
+                                    editor.putBoolean(FIRST_CHECK_PLAYLIST_KEY+New_Playlist,true);
+                                    editor.apply();
+                                    editor2.apply();
+                                    // Use DATA here (e.g., update UI, call a callback, etc.)
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("FIREBASE", "Failed to read data", error.toException());
+                                }
+                            });
+//                } else {
+//                    editor.putBoolean(New_Playlist,false);
+//                    editor.putBoolean(BACKUP_PLAYLIST_PERMISSION_KEY_PLUS_PLAYLIST_NAME+New_Playlist,false);
+//                }
+                editor.apply();
+//                setting_button.setVisibility(View.VISIBLE);
+//                add_new_playlist_interface.setVisibility(View.GONE);
+////                if(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false)){
+////                    make_a_toast("testing",true);
+////                }
+//                miniplayer.setVisibility(preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY,false)?View.VISIBLE:View.GONE);
+////                set_all_interface_button_visibility(true);
+//                all_playlist_interface.setVisibility(View.VISIBLE);
+            }else {
+                make_a_toast(String.format("%s Playlist Already Exists",New_Playlist),true);
+            }
+
+
+
+
+
+
     }
 
 

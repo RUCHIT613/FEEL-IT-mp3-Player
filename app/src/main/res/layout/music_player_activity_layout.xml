@@ -29,6 +29,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.05"
@@ -400,6 +401,19 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.044"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.026" />
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ripple_effect_for_songs"
+            android:onClick="SAVE_TO_DATABASE"
+            android:src="@drawable/cloud_upload"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.96"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.026" />
@@ -844,6 +858,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView11"
+        app:cardBackgroundColor="#00000000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/ripple_effect_for_songs"
@@ -935,6 +950,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.87"
                 app:layout_constraintStart_toStartOf="parent"
+                app:cardBackgroundColor="#00000000"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -956,6 +972,7 @@
                 android:layout_marginVertical="10dp"
                 android:background="@drawable/ripple_effect_for_songs"
                 app:cardCornerRadius="100dp"
+                app:cardBackgroundColor="#00000000"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/cardView3"
                 app:layout_constraintHorizontal_bias="0.99"
@@ -983,6 +1000,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/cardView3"
+                app:cardBackgroundColor="#00000000"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
@@ -1787,6 +1805,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="4dp"
+                    app:cardBackgroundColor="#00000000"
 
                     android:layout_marginTop="10dp"
 
@@ -1837,6 +1856,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
+                        app:cardBackgroundColor="#00000000"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -2069,6 +2089,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="10dp"
                         android:visibility="visible"
+                        app:cardBackgroundColor="#00000000"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -2838,6 +2859,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="4dp"
+                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:background="@color/black2">
 
@@ -2988,6 +3010,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:tag="thirty"
+                        app:cardBackgroundColor="#00000000"
                         android:clickable="true"
                         android:background="@drawable/ripple_effect_for_songs"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -3023,6 +3046,7 @@
                         android:layout_marginTop="5dp"
                         android:layout_width="match_parent"
                         android:clickable="true"
+                        app:cardBackgroundColor="#00000000"
                         android:background="@drawable/ripple_effect_for_songs"
                         android:layout_height="wrap_content"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -3060,6 +3084,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/forty_five_min_timer_for_pause_timer"
                         app:layout_constraintVertical_bias="0.0"
                         android:layout_width="match_parent"
+                        app:cardBackgroundColor="#00000000"
                         android:layout_height="wrap_content">
                         <TextView
                             android:textStyle="bold"
@@ -3090,6 +3115,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:cardBackgroundColor="#00000000"
                         app:layout_constraintTop_toBottomOf="@+id/one_hour_timer_for_pause_timer"
                         app:layout_constraintVertical_bias="0.0">
                         <TextView
@@ -3175,6 +3201,7 @@
                         android:background="@drawable/ripple_effect_for_songs"
                         android:clickable="true"
                         android:visibility="gone"
+                        app:cardBackgroundColor="#00000000"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="@+id/min_numpicker_for_pause_timer"
                         app:layout_constraintHorizontal_bias="0.51"
@@ -3273,6 +3300,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0"
                             android:layout_marginTop="10dp"
+                            app:cardBackgroundColor="#00000000"
                             android:layout_marginHorizontal="10dp"
 
                             >
@@ -3306,6 +3334,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
                             app:layout_constraintStart_toStartOf="parent"
+                            app:cardBackgroundColor="#00000000"
                             app:layout_constraintTop_toBottomOf="@+id/thirty_mins_timer_for_play_timer"
                             app:layout_constraintVertical_bias="0.0">
                             <TextView
@@ -3337,6 +3366,7 @@
                             app:layout_constraintTop_toBottomOf="@+id/forty_five_min_timer_for_play_timer"
                             app:layout_constraintVertical_bias="0.0"
                             android:layout_width="match_parent"
+                            app:cardBackgroundColor="#00000000"
                             android:layout_height="wrap_content">
                             <TextView
                                 android:textStyle="bold"
@@ -3363,6 +3393,7 @@
                             android:background="@drawable/ripple_effect_for_songs"
                             android:clickable="true"
                             android:layout_marginBottom="5dp"
+                            app:cardBackgroundColor="#00000000"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintHorizontal_bias="0.0"
@@ -3452,6 +3483,7 @@
                             android:background="@drawable/ripple_effect_for_songs"
                             android:clickable="true"
                             android:visibility="gone"
+                            app:cardBackgroundColor="#00000000"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="@+id/min_numpicker_for_play_timer"
                             app:layout_constraintHorizontal_bias="0.51"
@@ -3701,6 +3733,7 @@
                             android:background="@drawable/ripple_effect_for_songs"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:cardBackgroundColor="#00000000"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/WIDGET_PREVIEW_IMAGEVIEW"
                             app:layout_constraintVertical_bias="0.0">
@@ -3830,6 +3863,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
+                            app:cardBackgroundColor="#00000000"
                             app:layout_constraintTop_toBottomOf="@id/constraint_layout_slot1_controls"
                             app:layout_constraintVertical_bias="0.0">
 
@@ -4031,8 +4065,67 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/Retrieve_playlist_extended_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/black2">
+                    <TextView
+                        android:id="@+id/RETRIEIVE_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:autoSizeTextType="uniform"
+                        android:text="RETRIEVE PLAYLISTS"
+                        android:onClick="RETRIEVE_USER_PLAYLISTS"
+
+                        android:textColor="@color/cyan"
+                        android:textSize="27dp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/retrieve_playlist_recyclerview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintStart_toStartOf="@id/RETRIEIVE_textview"
+                        app:layout_constraintEnd_toEndOf="@id/RETRIEIVE_textview"
+                        app:layout_constraintTop_toBottomOf="@id/RETRIEIVE_textview"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/add_new_playlist_button_drawable"
+                    app:cardCornerRadius="20dp"
+                    android:clickable="true"
+                    android:layout_margin="20dp">
+
+                    <TextView
+                        android:id="@+id/LOGIN_BUTTON_SETTING"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:background="@color/cyan"
+                        android:gravity="center"
+                        android:padding="5dp"
+
+                        android:textColor="@color/black2"
+                        android:textStyle="bold"
+                        android:textSize="25dp"
+
+                        android:text="SIGN IN"
+                        android:onClick="login"/>
+                </androidx.cardview.widget.CardView>
 
 
 
@@ -4047,6 +4140,7 @@
         android:id="@+id/setting_option_button_"
         android:layout_width="55dp"
         android:layout_height="55dp"
+        android:visibility="visible"
         android:onClick="SETTING_OPTION_BUTTON"
         android:src="@drawable/setting_start_anim"
         android:background="@drawable/ripple_effect"

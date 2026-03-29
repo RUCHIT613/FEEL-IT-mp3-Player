@@ -1,5 +1,6 @@
 plugins {
     id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -41,7 +42,9 @@ dependencies {
 //    implementation ("androidx.appcompat:appcompat:1.4.1")
     implementation ("androidx.media:media:1.7.0")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
-    implementation("androidx.activity:activity:1.9.1") // Use the latest version available
+    implementation("androidx.activity:activity:1.9.1")
+    implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation("com.google.firebase:firebase-auth:23.2.1") // Use the latest version available
     annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 
 //    implementation ("com.android.support:support-v4:28.0.0")
@@ -56,6 +59,6 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.6.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("androidx.palette:palette:1.0.0")
-    implementation(kotlin("script-runtime"))
+//    implementation(kotlin("script-runtime"))
 
 }

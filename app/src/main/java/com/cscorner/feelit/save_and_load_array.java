@@ -2,6 +2,7 @@ package com.cscorner.feelit;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -40,8 +41,26 @@ public class save_and_load_array {
             Gson gson=new Gson();
             String json= gson.toJson(arrayList);
             editor.putString(ARRAY_ID,json);
+            Log.d("ARAYYYYYYY", json);
+
             editor.apply();
 
+        }
+
+        public static String return_array_string(Context context,ArrayList<Recently_added_recyclerview_elements_item_class> arrayList){
+//            SharedPreferences preferences =context.getSharedPreferences(PREFS_NAME2,Context.MODE_PRIVATE);
+//            SharedPreferences.Editor editor=preferences.edit();
+            Gson gson=new Gson();
+            String json= gson.toJson(arrayList);
+            return json;
+        }
+
+        public static ArrayList<Recently_added_recyclerview_elements_item_class> return_data(String DATA){
+
+            String json=DATA;
+            Gson gson =new Gson();
+            Type type=new TypeToken<ArrayList<Recently_added_recyclerview_elements_item_class>>(){}.getType();
+            return gson.fromJson(json,type);
         }
         public static ArrayList<Recently_added_recyclerview_elements_item_class> load_array_for_user_created_playlist(Context context,String ARRAY_ID){
             SharedPreferences preferences=context.getSharedPreferences(PREFS_NAME2,Context.MODE_PRIVATE);

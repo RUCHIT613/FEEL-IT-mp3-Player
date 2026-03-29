@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -89,6 +90,7 @@ public class All_Playlist_Fragment extends Fragment {
                         } else if (item.getItemId()==R.id.play_the_playlist_pop_up_menu_of_all_playlist_interface) {
                             editor.putString("ACTION","PLAY_PLAYLIST");
                             editor.putInt("PLAY_PLAYLIST",Position);
+                            Log.d("PLAY PLAYLIST",String.format("%s",arrayList_for_all_playlists.get(Position).getMPlaylist_name()));
                             editor.apply();
                         }
 
@@ -105,6 +107,11 @@ public class All_Playlist_Fragment extends Fragment {
         return view;
     }
     public void NOTIFY_PLAYLIST_INSERTED(int position){
+//        recyclerView=view.findViewById(R.id.All_playlist_recyclerview_all);
+        recyclerView.setHasFixedSize(true);
+//        Adapter_For_All_Playlist=new Playlist_recycler_item_Adapter_class(arrayList_for_all_playlists);
+        layoutManager=new LinearLayoutManager(getContext());
+        recyclerView.setAdapter(Adapter_For_All_Playlist);
         Adapter_For_All_Playlist.notifyItemInserted(position);
     }
     public void NOTIFY_PLAYLIST_REMOVED(int position){
