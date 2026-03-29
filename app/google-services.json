@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "610246209247",
+    "firebase_url": "https://feel-it-8c76c-default-rtdb.firebaseio.com",
+    "project_id": "feel-it-8c76c",
+    "storage_bucket": "feel-it-8c76c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610246209247:android:8c5c73bf95d7b64e95c36a",
+        "android_client_info": {
+          "package_name": "com.cscorner.feelit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD6MRuSD0yonKPjHqN0sr5CwQ1YOlWadso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
