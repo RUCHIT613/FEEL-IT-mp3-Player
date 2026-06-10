@@ -17,11 +17,11 @@ public class check_whether_song_or_playlist_already_exists {
         return permission;
 
     }
-    public static boolean check_the_song(ArrayList<Recently_added_recyclerview_elements_item_class>arrayList_for_adding_song,String SONG_NAME,String SONG_PATH){
+    public static boolean check_the_song(ArrayList<Recently_added_recyclerview_elements_item_class>arrayList_for_adding_song,String SONG_NAME,String SONG_PATH,String ARTIST){
         boolean permission=true;
         for(int i=0;i<arrayList_for_adding_song.size();i++){
             Recently_added_recyclerview_elements_item_class current_item=arrayList_for_adding_song.get(i);
-            if(SONG_NAME.equals(current_item.getMsong_name()) && SONG_PATH.equals(current_item.getMpath())){
+            if(SONG_NAME.equals(current_item.getMsong_name()) && ARTIST.equals(current_item.getMartist())){
                 permission=false;
                 break;
             }

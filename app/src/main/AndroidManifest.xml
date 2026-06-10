@@ -50,6 +50,10 @@
         tools:ignore="ForegroundServicePermission"
         tools:targetApi="31">
         <activity
+            android:name=".MISSING_SONG_INTERFACE"
+            android:screenOrientation="fullSensor"
+            android:exported="false" />
+        <activity
             android:name=".FORGET_PASSWORD"
             android:exported="false" />
         <activity

@@ -1,8 +1,19 @@
 package com.cscorner.feelit;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.MISSING_SONGS_PLAYLIST_KEY;
+import static com.cscorner.feelit.MUSIC_PLAYER_ACTIVITY.PERMISSION_FOR_MISSING_SONGS_PLAYLIST_KEY;
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.ArrayList;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 
 public class Update_User_Created_Playlist {
 
@@ -72,7 +83,7 @@ public class Update_User_Created_Playlist {
     }
     public static boolean permission_to_display_song_in_log=true;
     public static String MISSING_SONG="";
-    public static ArrayList<Recently_added_recyclerview_elements_item_class> check_by_song_name(ArrayList<Recently_added_recyclerview_elements_item_class> recently_added,ArrayList<Recently_added_recyclerview_elements_item_class> user_arraylist){
+    public static ArrayList<Recently_added_recyclerview_elements_item_class> check_by_song_name(ArrayList<Recently_added_recyclerview_elements_item_class> recently_added,ArrayList<Recently_added_recyclerview_elements_item_class> user_arraylist,String PLAYLIST_NAME,Context context){
         ArrayList<Recently_added_recyclerview_elements_item_class> arrayList=new ArrayList<>();
         ArrayList<Recently_added_recyclerview_elements_item_class> arrayList1=new ArrayList<>();
 
@@ -99,8 +110,20 @@ public class Update_User_Created_Playlist {
             Recently_added_recyclerview_elements_item_class MISSING_ARTIST=arrayList1.get(i);
             Log.d("MISSING SONG",String.format("%s - %s",MISSING_ARTIST.getMsong_name(),MISSING_ARTIST.getMartist()));
         }
+        SharedPreferences sharedPreferences=context.getSharedPreferences("preff",MODE_PRIVATE);
+        SharedPreferences.Editor editor= sharedPreferences.edit();
+        if (arrayList1.size() != 0){
+            save_and_load_array.save_array_for_user_created_playlist(context,arrayList1,MISSING_SONGS_PLAYLIST_KEY+PLAYLIST_NAME);
+            editor.putBoolean(PERMISSION_FOR_MISSING_SONGS_PLAYLIST_KEY+PLAYLIST_NAME,true);
+            Log.d("MISSING_SONGS_DETECTED","MISSING_SONGS_DETECTED");
+        }else{
+            editor.putBoolean(PERMISSION_FOR_MISSING_SONGS_PLAYLIST_KEY+PLAYLIST_NAME,false);
+        }
+        editor.apply();
 
         return arrayList;
     }
+
+
 
 }

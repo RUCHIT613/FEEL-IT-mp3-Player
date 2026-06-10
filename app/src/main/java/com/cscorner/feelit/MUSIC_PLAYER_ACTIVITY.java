@@ -265,6 +265,15 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
     public static  final String FIRST_CHECK_PLAYLIST_KEY="key_of_first_check";
 
+    public static final String MISSING_SONGS_PLAYLIST_KEY="key_of_missing_song";
+    public static final String PERMISSION_FOR_MISSING_SONGS_PLAYLIST_KEY="permission_for_missing_songs";
+
+    public static final String REFRESH_PLAYLIST_KEY="key_of_refresh_playlist";
+    public static final String PERMISSION_FOR_REFRESH_PLAYLIST_KEY="permission_for_refresh_playlist";
+
+
+
+
 
     //HOME ATTRIBUTES
 
@@ -840,7 +849,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         if (preferences.getBoolean(MINIPLAYER_ACTIVATE_KEY, false)) {
 
             //THIS CHECKS A POSSIBILITY THAT IF SONG IS PLAYED AND THEN APP IS CLOSED AND USER DELETE THE SONG FROM IT'S EXTERNAL STORAGE AND OPENS THE APP, IT SHOULD WORK PROPERLY
-            if(!check_whether_song_or_playlist_already_exists.check_the_song(arrayList_for_recently_added_playlist,preferences.getString(MINIPLAYER_SONG_NAME_KEY,""),preferences.getString(MINIPLAYER_PATH_KEY,""))){
+            if(!check_whether_song_or_playlist_already_exists.check_the_song(arrayList_for_recently_added_playlist,preferences.getString(MINIPLAYER_SONG_NAME_KEY,""),preferences.getString(MINIPLAYER_PATH_KEY,""),preferences.getString(MINIPLAYER_ARTIST_NAME_KEY,""))){
 
                 make_a_toast("song_exists",false);
                 new_media_player_permission = true;
@@ -2373,7 +2382,8 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
             }
             boolean permission =check_whether_song_or_playlist_already_exists.check_the_song(temp_array_for_adding_song_to_playlist,//SELECTED PLAYLIST
                                                                                             CURRENT_ITEM.getMsong_name(),          //SELECTED SONG NAME
-                                                                                            CURRENT_ITEM.getMpath());             //SELECTED SONG PATH
+                                                                                            CURRENT_ITEM.getMpath(),              //SELECTED SONG PATH
+                                                                                            CURRENT_ITEM.getMartist());           //SELECTED SONG ARTIST
 
             if(permission){        //IF SONG DOES NOT EXISTS IN THE PLAYLIST
                 temp_array_for_adding_song_to_playlist.add(new Recently_added_recyclerview_elements_item_class(
@@ -2399,7 +2409,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 
     }
-    public String CHILD_PLAYLIST_KEY="";
+    public static String CHILD_PLAYLIST_KEY="";
 //    public ArrayList<Recently_added_recyclerview_elements_item_class> database_arraylist=new ArrayList<>();
     public void user_created_playlist(String PLAYLIST_NAME, int PLAYLIST_POSITION) throws IOException {
         CHILD_PLAYLIST_KEY=PLAYLIST_NAME;
@@ -2428,7 +2438,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         if (should_i_load_user_created_playlist) {
 //            arrayList_for_user_created_playlist=
             if(preferences.getBoolean(FIRST_CHECK_PLAYLIST_KEY+PLAYLIST_NAME,false)){
-                arrayList_for_user_created_playlist = Update_User_Created_Playlist.check_by_song_name(arrayList_for_recently_added_playlist, save_and_load_array.load_array_for_user_created_playlist(this, PLAYLIST_NAME));
+                arrayList_for_user_created_playlist = Update_User_Created_Playlist.check_by_song_name(arrayList_for_recently_added_playlist, save_and_load_array.load_array_for_user_created_playlist(this, PLAYLIST_NAME),PLAYLIST_NAME,getApplicationContext());
                 editor.putBoolean(FIRST_CHECK_PLAYLIST_KEY+PLAYLIST_NAME,false);
                 editor.apply();
                 Log.d("FIRST_OR_NOT", "FIRST TIME");
@@ -4641,7 +4651,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
                     if(preferences.getBoolean(CURRENT_PLAYING_PLAYLIST,false)){                                                            //THIS LINE CHECKS WHETHER CURRENTLY_PLAYING_PLAYLIST IS EMPTY OR NOT
 
-                        if(!check_whether_song_or_playlist_already_exists.check_the_song(temp_array_list,item.getMsong_name(),item.getMpath())){   //THIS LINE CHECKS WHETHER CURRENT PLAYING SONG EXISTS IN THAT PLAYLIST OR NOT
+                        if(!check_whether_song_or_playlist_already_exists.check_the_song(temp_array_list,item.getMsong_name(),item.getMpath(),item.getMartist())){   //THIS LINE CHECKS WHETHER CURRENT PLAYING SONG EXISTS IN THAT PLAYLIST OR NOT
                             permission_for_miniplayer_activation=true;
                         }else{
                             make_a_toast("song_does_not_exist_in_the_playlist",false);
@@ -7479,7 +7489,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
     }
 
 
-    public void SAVE_TO_DATABASE(View view){
+    public void SAVE_TO_DATABASE(){
         user= auth.getCurrentUser();
         if(user!=null){
             if(arrayList_for_user_created_playlist.size()!=0){
@@ -7561,6 +7571,7 @@ public void RETRIEVE_USER_PLAYLISTS(View view) {
 
 }
 
+
     public void get_retrieve_playlist(PlaylistCallback callback) {
         ArrayList<String> arrayList = new ArrayList<>();
         user=auth.getCurrentUser();
@@ -7630,6 +7641,8 @@ public void RETRIEVE_USER_PLAYLISTS(View view) {
 
                                     editor2.putString(New_Playlist,DATA);
                                     editor.putBoolean(FIRST_CHECK_PLAYLIST_KEY+New_Playlist,true);
+                                    editor.putBoolean(PERMISSION_FOR_REFRESH_PLAYLIST_KEY+New_Playlist,true);
+                                    editor.putString(REFRESH_PLAYLIST_KEY+New_Playlist,DATA);
                                     editor.apply();
                                     editor2.apply();
                                     // Use DATA here (e.g., update UI, call a callback, etc.)
@@ -7663,6 +7676,58 @@ public void RETRIEVE_USER_PLAYLISTS(View view) {
 
 
     }
+
+    public void ACTIVATE_USER_PLAYLIST_POPUP(View view){
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view, Gravity.END);
+        popupMenu.inflate(R.menu.user_playlist_pop_up_menu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.refresh) {
+                    try {
+                        REFRESH(CHILD_PLAYLIST_KEY);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return true;
+                }
+
+                else if(item.getItemId()==R.id.upload_playlist_data){
+                    SAVE_TO_DATABASE();
+                    return true;
+                }
+
+                else if (item.getItemId()==R.id.missing_songs) {
+                    ACTIVATE_MISSING_SONG_INTERFACE();
+                    return true;
+                }
+                return false;
+            }
+
+        });
+        popupMenu.show();
+    }
+
+
+    public void REFRESH(String PLAYLIST) throws IOException {
+        editor.putBoolean(FIRST_CHECK_PLAYLIST_KEY+PLAYLIST,true);
+        SharedPreferences preferences1=getSharedPreferences("name2",MODE_PRIVATE);
+        SharedPreferences.Editor editor1=preferences1.edit();
+        editor1.putString(PLAYLIST,preferences.getString(REFRESH_PLAYLIST_KEY+PLAYLIST,""));
+        editor1.apply();
+        editor.apply();
+        user_created_playlist(PLAYLIST,CURRENT_PLAYLIST_POSITION_FOR_MORE_BUTTON);
+    }
+    public void ACTIVATE_MISSING_SONG_INTERFACE(){
+        if(preferences.getBoolean(PERMISSION_FOR_MISSING_SONGS_PLAYLIST_KEY+CHILD_PLAYLIST_KEY,false)){
+            startActivity(new Intent(this,MISSING_SONG_INTERFACE.class));
+        }else{
+            make_a_toast("NO MISSING SONG DETECTED",true);
+        }
+    }
+
+
+
 
 
 
