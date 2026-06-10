@@ -2021,7 +2021,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
         recyclerView = findViewById(R.id.recently_added_recyclerview___);
         adapter_for_recently_added_playist = new recently_added_adapter_class(arrayList_for_recently_added_playlist);
         layoutManager = new LinearLayoutManager(this);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter_for_recently_added_playist);
         adapter_for_recently_added_playist.set_ON_CLICKED_LISTENER(new recently_added_adapter_class.OnCLICK_LISTENER() {
@@ -2223,7 +2223,7 @@ public class MUSIC_PLAYER_ACTIVITY extends AppCompatActivity implements MUSIC_PL
 
 
         recyclerView = findViewById(R.id.add_multiple_songs_to_multiple_playlist_recyclerview);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(false);
         adapter_for_add_multiple_songs_to_multiple_playlist = new adapter_for_add_multiple_songs_to_multiple_playlist(arrayList_for_add_multiple_songs_to_multiple_playlist);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
