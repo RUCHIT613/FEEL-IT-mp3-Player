@@ -7725,6 +7725,15 @@ public void RETRIEVE_USER_PLAYLISTS(View view) {
             make_a_toast("NO MISSING SONG DETECTED",true);
         }
     }
+    public void Cloud_Services(View view){
+        if (user!=null){
+            make_a_toast("LOGGED IN",true);
+            startActivity(new Intent(this, CloudServices_MainActivity.class));
+        }else{
+            make_a_toast("Please Login First",true);
+        }
+
+    }
 
 
 

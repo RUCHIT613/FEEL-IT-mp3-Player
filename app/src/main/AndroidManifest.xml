@@ -48,11 +48,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="ForegroundServicePermission"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".UPLOAD_USER_CREATED_PLAYLIST"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".DOWNLOAD_SONGS_ACTIVITY"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UPLOAD_SONGS_ACTIVITY"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CloudServices_MainActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MISSING_SONG_INTERFACE"
-            android:screenOrientation="fullSensor"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="fullSensor" />
         <activity
             android:name=".FORGET_PASSWORD"
             android:exported="false" />

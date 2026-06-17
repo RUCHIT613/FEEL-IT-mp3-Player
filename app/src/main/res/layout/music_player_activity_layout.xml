@@ -4114,6 +4114,33 @@
                         app:layout_constraintTop_toBottomOf="@id/RETRIEIVE_textview"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/cloud_services"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/black2">
+                    <TextView
+                        android:id="@+id/Cloud_Service_textview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="10dp"
+                        android:autoSizeTextType="uniform"
+                        android:text="CLOUD SERVICES"
+                        android:onClick="Cloud_Services"
+
+                        android:textColor="@color/cyan"
+                        android:textSize="27dp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.0" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

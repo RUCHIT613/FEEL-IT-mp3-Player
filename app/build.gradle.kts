@@ -59,6 +59,9 @@ dependencies {
     androidTestImplementation ("androidx.test.espresso:espresso-core:3.6.1")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("androidx.palette:palette:1.0.0")
+
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
 //    implementation(kotlin("script-runtime"))
 
 }
